@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Public Cloud Executive Summary — MGM Resorts</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f5f6f8;--card:#fff;--border:#e5e7eb;--hover:#f9fafb;
+  --text:#111827;--sub:#6b7280;--muted:#9ca3af;
+  --blue:#2563eb;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+  --green:#059669;--green-bg:#ecfdf5;--green-border:#a7f3d0;
+  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+  --orange:#d97706;--orange-bg:#fffbeb;
+  --shadow:0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -2px rgba(0,0,0,.05);
+  --radius:8px;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ═══ NAV ═══ */
+.nav{background:#111827;padding:0 28px;display:flex;align-items:center;height:48px;gap:24px;position:sticky;top:0;z-index:200}
+.nav-brand{font-size:13px;font-weight:700;color:#f9fafb;letter-spacing:-.01em}
+.nav-brand span{color:#60a5fa;font-weight:800}
+.nav-sep{width:1px;height:20px;background:#374151}
+.nav-item{font-size:12px;color:#9ca3af;font-weight:500;cursor:pointer;padding:14px 0;border-bottom:2px solid transparent;transition:all .15s}
+.nav-item:hover{color:#d1d5db}
+.nav-item.active{color:#f9fafb;border-color:#60a5fa}
+.nav-date{margin-left:auto;font-size:11px;color:#6b7280}
+
+/* ═══ TOOLBAR ═══ */
+.toolbar{background:var(--card);border-bottom:1px solid var(--border);padding:10px 28px;display:flex;align-items:center;gap:16px;position:sticky;top:48px;z-index:190}
+.tool-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.tool-sep{width:1px;height:24px;background:var(--border)}
+
+/* Month pills */
+.month-pills{display:flex;gap:4px}
+.month-pill{
+  padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);
+  font-size:11px;font-weight:600;color:var(--sub);cursor:pointer;transition:all .12s;
+  font-family:'Inter',sans-serif;white-space:nowrap;
+}
+.month-pill:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+.month-pill.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* Cloud toggles */
+.cloud-toggles{display:flex;gap:4px}
+.cloud-toggle{
+  padding:5px 14px;border-radius:6px;border:2px solid var(--border);background:var(--card);
+  font-size:11px;font-weight:700;cursor:pointer;transition:all .12s;
+  font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;
+  user-select:none;
+}
+.cloud-toggle .dot{width:8px;height:8px;border-radius:2px;transition:background .15s}
+.cloud-toggle.off{opacity:.4}
+.cloud-toggle.off .dot{background:#d1d5db !important}
+.cloud-toggle:hover{border-color:#9ca3af}
+
+/* ═══ CONTENT ═══ */
+.content{max-width:1260px;margin:0 auto;padding:20px 28px}
+
+/* ═══ KPI ROW ═══ */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.kpi{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 18px;box-shadow:var(--shadow);transition:box-shadow .15s;
+}
+.kpi:hover{box-shadow:var(--shadow-md)}
+.kpi-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kpi-lbl .dot{width:6px;height:6px;border-radius:2px}
+.kpi-val{font-size:24px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-.02em}
+.kpi-meta{font-size:11px;color:var(--sub);margin-top:4px;display:flex;align-items:center;gap:6px}
+.badge{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+.badge-over{background:var(--red-bg);color:var(--red)}
+.badge-under{background:var(--green-bg);color:var(--green)}
+
+/* ═══ GRID ═══ */
+.grid-2{display:grid;grid-template-columns:3fr 2fr;gap:16px;margin-bottom:20px}
+.grid-2eq{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+
+/* ═══ CARD ═══ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:var(--text)}
+.card-sub{font-size:11px;color:var(--muted);font-weight:500}
+
+/* ═══ TABLE ═══ */
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;padding:7px 10px;text-align:left;border-bottom:2px solid var(--border)}
+th.r{text-align:right}
+td{padding:9px 10px;font-size:12px;color:var(--sub);border-bottom:1px solid #f3f4f6}
+td.r{text-align:right}
+td.b{font-weight:600;color:var(--text)}
+td.m{font-family:'JetBrains Mono',monospace;font-size:12px}
+tr:hover{background:var(--hover)}
+tr.tot{border-top:2px solid var(--border)}
+tr.tot td{font-weight:700;color:var(--text);padding-top:10px}
+tr.hl{background:var(--blue-bg)}
+.over{color:var(--red);font-weight:600}
+.under{color:var(--green);font-weight:600}
+
+/* ═══ BARS ═══ */
+.hbar{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.hbar-lbl{width:130px;font-size:10px;color:var(--sub);text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar-track{flex:1;height:20px;background:#f3f4f6;border-radius:3px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.hbar-val{width:40px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text)}
+
+/* ═══ PROGRESS ═══ */
+.prog-track{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;margin:6px 0}
+.prog-fill{height:100%;border-radius:4px;background:var(--blue)}
+
+/* ═══ FOOTER ═══ */
+.footer{text-align:center;padding:20px 28px;color:var(--muted);font-size:10px;border-top:1px solid var(--border);margin-top:24px}
+
+/* Responsive */
+@media(max-width:900px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-2eq,.grid-3{grid-template-columns:1fr}
+}
+@media print{.nav,.toolbar{position:static}body{background:#fff}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+  DATA — EDIT THIS SECTION TO ADD NEW MONTHS
+  Just add new values to the end of each costs/budgets array
+  and add the month name to the months array.
+═══════════════════════════════════════════════════════ -->
+<script>
+const DATA = {
+  months: ["Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026"],
+  azure: {
+    costs:   [1571750.63, 1546713.68, 1634927.43, 1618618.04, 1713896.84, 1740906.54],
+    budgets: [1500000, 1500000, 1500000, 1500000, 1500000, 1850000],
+  },
+  aws: {
+    costs:   [78200, 80100, 82400, 81300, 84449.34, 86200],
+    budgets: [100000, 100000, 100000, 100000, 100000, 100000],
+  },
+  gcp: {
+    costs:   [35400, 36800, 37200, 38100, 39885.73, 41200],
+    budgets: [65000, 65000, 65000, 65000, 65000, 65000],
+  },
+  top20: [
+    {name:"Data Services Production",cost:322681.04,pct:18.5},
+    {name:"CRM Personalization Prod",cost:147294.61,pct:8.5},
+    {name:"Booking Production",cost:102394.17,pct:5.9},
+    {name:"CIG Data Production",cost:83716.78,pct:4.8},
+    {name:"Payment Production",cost:68929.94,pct:4.0},
+    {name:"CIG Data Development",cost:63078.21,pct:3.6},
+    {name:"Data Services Dev",cost:62837.05,pct:3.6},
+    {name:"Azure Enterprise",cost:62560.60,pct:3.6},
+    {name:"CIG Loyalty Production",cost:60428.95,pct:3.5},
+    {name:"Automation Services",cost:54914.03,pct:3.2},
+    {name:"IT Shared Services",cost:49373.04,pct:2.8},
+    {name:"Guest Services Dev",cost:43934.82,pct:2.5},
+    {name:"Payment Development",cost:42713.90,pct:2.5},
+    {name:"Commit Purchase Prod",cost:27777.77,pct:1.6},
+    {name:"CIG ResortTech Dev",cost:27371.60,pct:1.6},
+    {name:"Booking Development",cost:27259.57,pct:1.6},
+    {name:"Fabric Production",cost:23258.25,pct:1.3},
+    {name:"CIG Loyalty Dev",cost:23065.80,pct:1.3},
+    {name:"Identity Production",cost:22979.48,pct:1.3},
+    {name:"Guest Services Prod",cost:22901.13,pct:1.3},
+  ],
+  mca:{total:17000000,current:14079000,balance:2921000},
+  aiGrowth:[{m:"Jul",c:910.36},{m:"Aug",c:2249.17},{m:"Sep",c:5763.19},{m:"Oct",c:10513.91}],
+  additional:[
+    {metric:"Cost to Produce",value:"$480,523",nov:"27.0%",may:"27.5%"},
+    {metric:"Cost to Serve",value:"$1,299,857",nov:"73.0%",may:"72.5%"},
+    {metric:"Reservation Coverage",value:"20 Reservations",nov:"72.4%",may:"43.2%"},
+    {metric:"Top 20 Accts (of 215)",value:"% of overall",nov:"71.0%",may:"71.8%"},
+  ],
+};
+</script>
+
+<nav class="nav">
+  <div class="nav-brand"><span>MGM</span> Platform Economics</div>
+  <div class="nav-sep"></div>
+  <div class="nav-item active" onclick="setView('overview',this)">Overview</div>
+  <div class="nav-item" onclick="setView('monthly',this)">Monthly Detail</div>
+  <div class="nav-item" onclick="setView('accounts',this)">Accounts</div>
+  <div class="nav-date" id="navDate"></div>
+</nav>
+
+<div class="toolbar">
+  <span class="tool-label">Month</span>
+  <div class="month-pills" id="monthPills"></div>
+  <div class="tool-sep"></div>
+  <span class="tool-label">Clouds</span>
+  <div class="cloud-toggles" id="cloudToggles"></div>
+</div>
+
+<div class="content" id="main"></div>
+<div class="footer">Platform Economics · FinOps · MGM Resorts International</div>
+
+<script>
+// ═══ STATE ═══
+let sel = DATA.months.length - 1;
+let view = 'overview';
+let clouds = { AZURE: true, AWS: true, GCP: true };
+const CC = { AZURE:'#2563eb', AWS:'#d97706', GCP:'#059669' };
+
+// ═══ UTILS ═══
+const f$ = n => '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fK = n => Math.abs(n)>=1e6?'$'+(n/1e6).toFixed(2)+'M':Math.abs(n)>=1e3?'$'+(n/1e3).toFixed(0)+'K':'$'+n.toFixed(0);
+const fP = (a,b) => ((a/b)*100).toFixed(1)+'%';
+const vc = (c,b) => c>b?'over':'under';
+const vt = (c,b) => {const v=c-b; return v>0?f$(v):'('+f$(Math.abs(v))+')';};
+
+// ═══ BUILD TOOLBAR ═══
+function buildToolbar(){
+  document.getElementById('navDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('monthPills').innerHTML=DATA.months.map((m,i)=>`<button class="month-pill${i===sel?' active':''}" onclick="selMonth(${i})">${m}</button>`).join('');
+  document.getElementById('cloudToggles').innerHTML=['AZURE','AWS','GCP'].map(c=>`<button class="cloud-toggle${clouds[c]?'':' off'}" onclick="togCloud('${c}')" style="border-color:${clouds[c]?CC[c]:'var(--border)'}"><span class="dot" style="background:${CC[c]}"></span>${c}</button>`).join('');
+}
+
+function selMonth(i){sel=i;buildToolbar();render()}
+function togCloud(c){clouds[c]=!clouds[c];buildToolbar();render()}
+function setView(v,el){view=v;document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));el.classList.add('active');render()}
+
+// ═══ GET VISIBLE DATA ═══
+function getVisible(){
+  const items=[];
+  if(clouds.AWS) items.push({name:'AWS',c:DATA.aws.costs[sel],b:DATA.aws.budgets[sel],cl:CC.AWS,costs:DATA.aws.costs,budgets:DATA.aws.budgets});
+  if(clouds.AZURE) items.push({name:'AZURE',c:DATA.azure.costs[sel],b:DATA.azure.budgets[sel],cl:CC.AZURE,costs:DATA.azure.costs,budgets:DATA.azure.budgets});
+  if(clouds.GCP) items.push({name:'GCP',c:DATA.gcp.costs[sel],b:DATA.gcp.budgets[sel],cl:CC.GCP,costs:DATA.gcp.costs,budgets:DATA.gcp.budgets});
+  return items;
+}
+
+// ═══ RENDER ═══
+function render(){
+  const items=getVisible();
+  const tC=items.reduce((s,r)=>s+r.c,0);
+  const tB=items.reduce((s,r)=>s+r.b,0);
+  let h='';
+
+  if(view==='overview'){
+    // KPIs
+    h+=`<div class="kpis">
+      <div class="kpi"><div class="kpi-lbl">Total Spend · ${DATA.months[sel]}</div><div class="kpi-val">${fK(tC)}</div><div class="kpi-meta">Budget ${fK(tB)} <span class="badge badge-${vc(tC,tB)}">${tC>tB?'▲':'▼'} ${fP(Math.abs(tC-tB),tB)}</span></div></div>`;
+    items.forEach(r=>{
+      h+=`<div class="kpi"><div class="kpi-lbl"><span class="dot" style="background:${r.cl}"></span>${r.name}</div><div class="kpi-val">${fK(r.c)}</div><div class="kpi-meta">Budget ${fK(r.b)} <span class="badge badge-${vc(r.c,r.b)}">${r.c>r.b?'▲ Over':'▼ Under'}</span></div></div>`;
+    });
+    // fill remaining KPI slots
+    for(let x=items.length;x<4;x++) h+=`<div class="kpi" style="opacity:0;pointer-events:none"></div>`;
+    h+=`</div>`;
+
+    // Spend table + Trend
+    h+=`<div class="grid-2">
+      <div class="card"><div class="card-hdr"><div class="card-title">Spend / Budget / Variance</div><div class="card-sub">${DATA.months[sel]}</div></div>
+      <table><thead><tr><th></th><th class="r">COST</th><th class="r">BUDGET</th><th class="r">VARIANCE</th><th class="r">VAR %</th></tr></thead><tbody>`;
+    items.forEach(r=>{
+      h+=`<tr><td class="b"><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${r.cl};margin-right:8px;vertical-align:middle"></span>${r.name}</td><td class="m r">${f$(r.c)}</td><td class="m r">${f$(r.b)}</td><td class="m r ${vc(r.c,r.b)}">${vt(r.c,r.b)}</td><td class="m r ${vc(r.c,r.b)}">${fP(Math.abs(r.c-r.b),r.b)}</td></tr>`;
+    });
+    h+=`<tr class="tot"><td>Total</td><td class="m r">${f$(tC)}</td><td class="m r">${f$(tB)}</td><td class="m r ${vc(tC,tB)}">${vt(tC,tB)}</td><td class="m r ${vc(tC,tB)}">${fP(Math.abs(tC-tB),tB)}</td></tr></tbody></table></div>`;
+
+    // Trend chart
+    const allV=items.flatMap(r=>[...r.costs,...r.budgets]);
+    const mx=Math.max(...allV)*1.08;
+    h+=`<div class="card"><div class="card-hdr"><div class="card-title">Spend Trend</div><div class="card-sub">All selected clouds</div></div>
+      <div style="display:flex;align-items:flex-end;gap:6px;height:160px;padding:4px 0">`;
+    DATA.months.forEach((mo,idx)=>{
+      let mTotal=0;
+      items.forEach(r=>mTotal+=r.costs[idx]);
+      let mBud=0;
+      items.forEach(r=>mBud+=r.budgets[idx]);
+      const hC=(mTotal/mx)*140,hB=(mBud/mx)*140;
+      const isSel=idx===sel;
+      h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer" onclick="selMonth(${idx})">
+        <div style="font-size:9px;font-weight:${isSel?'700':'500'};color:${isSel?'var(--blue)':'var(--muted)'};font-family:'JetBrains Mono',monospace;margin-bottom:3px">${fK(mTotal)}</div>
+        <div style="display:flex;gap:2px;align-items:flex-end;height:130px">
+          <div style="width:16px;height:${hC}px;background:${isSel?'var(--blue)':'#d1d5db'};border-radius:3px 3px 0 0;transition:all .2s"></div>
+          <div style="width:6px;height:${hB}px;background:transparent;border:1px dashed var(--muted);border-radius:2px 2px 0 0"></div>
+        </div>
+        <div style="font-size:9px;color:${isSel?'var(--blue)':'var(--muted)'};font-weight:${isSel?'700':'500'};margin-top:4px">${mo.replace('20',"'")}</div>
+      </div>`;
+    });
+    h+=`</div><div style="display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:10px;color:var(--sub)"><span>■ Spend</span><span>┆ Budget</span></div></div></div>`;
+
+    // YTD + MCA
+    h+=`<div class="grid-2eq">
+      <div class="card"><div class="card-hdr"><div class="card-title">Year-to-Date Spend</div><div class="card-sub">${DATA.months[0]} – ${DATA.months[DATA.months.length-1]}</div></div>
+      <table><thead><tr><th>CLOUD</th><th class="r">YTD COST</th><th class="r">% TOTAL</th></tr></thead><tbody>`;
+    let grandYTD=0;
+    const ytdRows=items.map(r=>{const ytd=r.costs.reduce((s,v)=>s+v,0);grandYTD+=ytd;return{...r,ytd}});
+    ytdRows.forEach(r=>{h+=`<tr><td class="b"><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${r.cl};margin-right:8px;vertical-align:middle"></span>${r.name}</td><td class="m r">${f$(r.ytd)}</td><td class="m r">${fP(r.ytd,grandYTD)}</td></tr>`;});
+    h+=`<tr class="tot"><td>Total</td><td class="m r">${f$(grandYTD)}</td><td class="m r">100.0%</td></tr></tbody></table></div>`;
+
+    // MCA
+    const mp=fP(DATA.mca.current,DATA.mca.total);
+    h+=`<div class="card"><div class="card-hdr"><div class="card-title">MCA Commitment</div><div class="card-sub">Azure</div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--sub);margin-bottom:2px"><span>Consumed: ${mp}</span><span>Balance: ${fK(DATA.mca.balance)}</span></div>
+      <div class="prog-track"><div class="prog-fill" style="width:${(DATA.mca.current/DATA.mca.total*100)}%"></div></div>
+      <table style="margin-top:12px"><thead><tr><th>TOTAL</th><th class="r">CURRENT</th><th class="r">BALANCE</th></tr></thead>
+      <tbody><tr><td class="m b">${fK(DATA.mca.total)}</td><td class="m r">~${fK(DATA.mca.current)}</td><td class="m r" style="color:var(--green);font-weight:700">${fK(DATA.mca.balance)}</td></tr></tbody></table>
+      <p style="font-size:10px;color:var(--muted);margin-top:8px;font-style:italic">*Brings us to end of March; MCA ends in May</p></div></div>`;
+
+    // AI Growth + Additional + Top 10
+    h+=`<div class="grid-3">`;
+    // AI Growth
+    const aiMx=Math.max(...DATA.aiGrowth.map(d=>d.c));
+    h+=`<div class="card"><div class="card-title" style="margin-bottom:14px">AI Growth — AWS</div>
+      <div style="display:flex;align-items:flex-end;gap:12px;height:140px;padding:4px">`;
+    DATA.aiGrowth.forEach(d=>{
+      const ht=(d.c/aiMx)*110;
+      h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center">
+        <div style="font-size:9px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text);margin-bottom:3px">${f$(d.c)}</div>
+        <div style="width:100%;max-width:44px;height:${ht}px;background:linear-gradient(180deg,var(--orange),#b45309);border-radius:3px 3px 0 0"></div>
+        <div style="font-size:10px;color:var(--sub);margin-top:5px;font-weight:600">${d.m}</div>
+      </div>`;
+    });
+    h+=`</div><div style="text-align:center;margin-top:8px;color:var(--green);font-size:11px;font-weight:700">▲ ${((DATA.aiGrowth[3].c/DATA.aiGrowth[0].c-1)*100).toFixed(0)}% growth</div></div>`;
+
+    // Additional
+    h+=`<div class="card"><div class="card-title" style="margin-bottom:14px">Additional Metrics</div>
+      <table><thead><tr><th>METRIC</th><th class="r">NOV</th><th class="r">MAY</th></tr></thead><tbody>`;
+    DATA.additional.forEach(r=>{h+=`<tr><td class="b" style="font-size:11px">${r.metric}</td><td class="m r" style="color:var(--blue);font-weight:600;font-size:11px">${r.nov}</td><td class="m r" style="font-size:11px">${r.may}</td></tr>`;});
+    h+=`</tbody></table></div>`;
+
+    // Top 10
+    const t10=DATA.top20.slice(0,10);
+    const t10mx=t10[0].pct;
+    h+=`<div class="card"><div class="card-title" style="margin-bottom:14px">Top 10 Accounts</div>`;
+    t10.forEach((a,i)=>{
+      const c=i<3?'var(--blue)':i<7?'#60a5fa':'#93c5fd';
+      h+=`<div class="hbar"><div class="hbar-lbl">${a.name}</div><div class="hbar-track"><div class="hbar-fill" style="width:${(a.pct/t10mx*100)}%;background:${c}"></div></div><div class="hbar-val">${a.pct}%</div></div>`;
+    });
+    h+=`</div></div>`;
+  }
+
+  // ═══ MONTHLY DETAIL VIEW ═══
+  if(view==='monthly'){
+    h+=`<div class="card" style="margin-bottom:20px"><div class="card-hdr"><div class="card-title">Monthly Comparison — All Months</div><div class="card-sub">Click any month in the toolbar to highlight</div></div>
+      <table><thead><tr><th>MONTH</th>`;
+    items.forEach(r=>{h+=`<th class="r">${r.name}</th>`;});
+    h+=`<th class="r">TOTAL</th><th class="r">BUDGET</th><th class="r">VARIANCE</th></tr></thead><tbody>`;
+    DATA.months.forEach((mo,idx)=>{
+      let mt=0,mb=0;
+      items.forEach(r=>{mt+=r.costs[idx];mb+=r.budgets[idx]});
+      h+=`<tr class="${idx===sel?'hl':''}"><td class="b">${mo}</td>`;
+      items.forEach(r=>{h+=`<td class="m r">${f$(r.costs[idx])}</td>`;});
+      h+=`<td class="m r b">${f$(mt)}</td><td class="m r">${f$(mb)}</td><td class="m r ${vc(mt,mb)}">${vt(mt,mb)}</td></tr>`;
+    });
+    // YTD row
+    let ytdT=0,ytdB=0;
+    h+=`<tr class="tot"><td>YTD</td>`;
+    items.forEach(r=>{const yt=r.costs.reduce((s,v)=>s+v,0);const yb=r.budgets.reduce((s,v)=>s+v,0);ytdT+=yt;ytdB+=yb;h+=`<td class="m r">${f$(yt)}</td>`;});
+    h+=`<td class="m r">${f$(ytdT)}</td><td class="m r">${f$(ytdB)}</td><td class="m r ${vc(ytdT,ytdB)}">${vt(ytdT,ytdB)}</td></tr></tbody></table></div>`;
+
+    // Per-cloud mini cards
+    h+=`<div class="grid-${items.length}">`;
+    items.forEach(r=>{
+      const mx=Math.max(...r.costs)*1.1;
+      h+=`<div class="card"><div class="card-hdr"><div class="card-title"><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${r.cl};margin-right:6px;vertical-align:middle"></span>${r.name}</div></div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:80px;margin-bottom:10px">`;
+      DATA.months.forEach((mo,idx)=>{
+        const ht=(r.costs[idx]/mx)*70;
+        h+=`<div style="flex:1;height:${ht}px;background:${idx===sel?r.cl:'#e5e7eb'};border-radius:2px 2px 0 0;cursor:pointer" onclick="selMonth(${idx})" title="${mo}: ${f$(r.costs[idx])}"></div>`;
+      });
+      h+=`</div><table><thead><tr><th>MONTH</th><th class="r">COST</th><th class="r">VARIANCE</th></tr></thead><tbody>`;
+      DATA.months.forEach((mo,idx)=>{
+        h+=`<tr${idx===sel?' class="hl"':''}><td style="font-size:11px">${mo}</td><td class="m r" style="font-size:11px">${f$(r.costs[idx])}</td><td class="m r ${vc(r.costs[idx],r.budgets[idx])}" style="font-size:11px">${vt(r.costs[idx],r.budgets[idx])}</td></tr>`;
+      });
+      h+=`</tbody></table></div>`;
+    });
+    h+=`</div>`;
+  }
+
+  // ═══ ACCOUNTS VIEW ═══
+  if(view==='accounts'){
+    const tmx=DATA.top20[0].pct;
+    const tpct=DATA.top20.reduce((s,a)=>s+a.pct,0);
+    h+=`<div class="grid-2"><div class="card"><div class="card-hdr"><div class="card-title">Top 20 Azure Subscriptions</div><div class="card-sub">Jan 2026 · % of total spend</div></div>`;
+    DATA.top20.forEach((a,i)=>{
+      const c=i<3?'var(--blue)':i<10?'#60a5fa':'#93c5fd';
+      h+=`<div class="hbar"><div class="hbar-lbl">${a.name}</div><div class="hbar-track"><div class="hbar-fill" style="width:${(a.pct/tmx*100)}%;background:${c}"></div></div><div class="hbar-val">${a.pct}%</div></div>`;
+    });
+    h+=`<div style="margin-top:12px;padding:10px;background:var(--blue-bg);border-radius:6px;text-align:center;font-size:12px;color:var(--blue);font-weight:700">Top 20 = ${tpct.toFixed(1)}% of total spend</div></div>`;
+
+    // Right side: table + additional
+    h+=`<div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><div class="card-title" style="margin-bottom:14px">Subscription Detail</div>
+      <table><thead><tr><th>#</th><th>SUBSCRIPTION</th><th class="r">COST</th><th class="r">% TOTAL</th></tr></thead><tbody>`;
+    DATA.top20.forEach((a,i)=>{h+=`<tr><td class="m" style="color:var(--muted)">${i+1}</td><td class="b" style="font-size:11px">${a.name}</td><td class="m r" style="font-size:11px">${f$(a.cost)}</td><td class="m r" style="font-size:11px">${a.pct}%</td></tr>`;});
+    h+=`</tbody></table></div>`;
+
+    h+=`<div class="card"><div class="card-title" style="margin-bottom:14px">Additional Measurements</div>
+      <table><thead><tr><th>METRIC</th><th class="r">VALUE</th><th class="r">NOV</th><th class="r">MAY</th></tr></thead><tbody>`;
+    DATA.additional.forEach(r=>{h+=`<tr><td class="b" style="font-size:11px">${r.metric}</td><td class="m r" style="font-size:11px">${r.value}</td><td class="m r" style="color:var(--blue);font-weight:600;font-size:11px">${r.nov}</td><td class="m r" style="font-size:11px">${r.may}</td></tr>`;});
+    h+=`</tbody></table></div></div></div>`;
+  }
+
+  document.getElementById('main').innerHTML=h;
+}
+
+// ═══ INIT ═══
+buildToolbar();
+render();
+</script>
+</body>
+</html>
