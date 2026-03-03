@@ -1,0 +1,7 @@
+{
+  "month": "Nov 2025",
+  "azure": { "cost": 1618618.04, "budget": 1500000 },
+  "aws": { "cost": 81300, "budget": 100000 },
+  "gcp": { "cost": 38100, "budget": 65000 },
+  "top20": []
+}
