@@ -1,0 +1,20 @@
+{
+  "mca": {
+    "total": 17000000,
+    "current": 14079000,
+    "balance": 2921000,
+    "note": "*Brings us to end of March; MCA ends in May"
+  },
+  "aiGrowth": [
+    { "m": "Jul", "c": 910.36 },
+    { "m": "Aug", "c": 2249.17 },
+    { "m": "Sep", "c": 5763.19 },
+    { "m": "Oct", "c": 10513.91 }
+  ],
+  "additional": [
+    { "metric": "Cost to Produce", "value": "$480,523", "nov": "27.0%", "may": "27.5%" },
+    { "metric": "Cost to Serve", "value": "$1,299,857", "nov": "73.0%", "may": "72.5%" },
+    { "metric": "Reservation Coverage", "value": "20 Reservations", "nov": "72.4%", "may": "43.2%" },
+    { "metric": "Top 20 Accts (of 215)", "value": "% of overall", "nov": "71.0%", "may": "71.8%" }
+  ]
+}

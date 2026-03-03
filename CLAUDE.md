@@ -1,301 +1,153 @@
 # CLAUDE.md — Cloud Cost Usage Dashboard
 
-This file provides context for AI assistants (Claude, Copilot, etc.) working in this repository. It describes the project purpose, planned architecture, development conventions, and workflow guidance.
+Context for AI assistants working in this repository.
 
 ---
 
 ## Project Overview
 
-**Cloud_cost_usage_dashboard** is a web-based dashboard for monitoring, visualizing, and analyzing cloud infrastructure costs across one or more cloud providers (AWS, Azure, GCP). The goal is to give engineering and finance teams a unified view of cloud spending with breakdowns by service, team, environment, and time period.
+**MGM Resorts Platform Economics** — a static, serverless executive dashboard for multi-cloud cost tracking (Azure, AWS, GCP), hosted on **GitHub Pages** with zero backend.
 
-### Core Features (Planned)
+Data lives as JSON files in the `data/` folder. The dashboard **auto-discovers** and loads them at runtime via the GitHub Contents API. To add a new month, just drop a JSON file — no code changes needed.
 
-- Multi-cloud cost aggregation (AWS Cost Explorer, Azure Cost Management, GCP Billing)
-- Time-series cost charts (daily, weekly, monthly)
-- Cost breakdown by service, tag, account, and region
-- Budget alerts and anomaly detection
-- Forecasting / trend analysis
-- Exportable reports (CSV, PDF)
-- Role-based access control (RBAC)
+### Live URL
 
----
-
-## Repository State
-
-> **Status: Early initialization** — No source code exists yet. This file is a forward-looking guide to establish conventions before development begins.
-
-Current contents:
 ```
-Cloud_cost_usage_dashboard/
-├── CLAUDE.md        ← this file
-└── README.md        ← project title only
+https://Loki6669.github.io/Cloud_cost_usage_dashboard/
 ```
 
 ---
 
-## Planned Architecture
-
-### Technology Stack (Recommended)
-
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 + TypeScript, Vite |
-| UI Components | Shadcn/UI or Ant Design |
-| Charts | Recharts or Chart.js |
-| State Management | Zustand or React Query (TanStack Query) |
-| Backend | Python (FastAPI) or Node.js (Express/Fastify) |
-| Database | PostgreSQL (cost data cache, user config) |
-| Auth | JWT + OAuth2 (Google/GitHub SSO) |
-| Cloud SDKs | boto3 (AWS), azure-mgmt-costmanagement, google-cloud-billing |
-| Containerization | Docker + docker-compose |
-| CI/CD | GitHub Actions |
-
-### Directory Layout (Target)
+## Repository Structure
 
 ```
 Cloud_cost_usage_dashboard/
-├── frontend/                  # React TypeScript SPA
-│   ├── src/
-│   │   ├── components/        # Reusable UI components
-│   │   │   ├── charts/        # Chart wrappers (CostBarChart, TrendLine, etc.)
-│   │   │   ├── layout/        # Shell, Sidebar, Header, etc.
-│   │   │   └── ui/            # Generic primitives (Button, Card, etc.)
-│   │   ├── pages/             # Route-level components (Dashboard, Reports, etc.)
-│   │   ├── hooks/             # Custom React hooks (useCostData, useFilters, etc.)
-│   │   ├── services/          # API client functions (api.ts, cloudProviders.ts)
-│   │   ├── store/             # Global state (filters, date ranges, user prefs)
-│   │   ├── types/             # Shared TypeScript types/interfaces
-│   │   └── utils/             # Formatting helpers (currency, dates, percentages)
-│   ├── public/
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vite.config.ts
-│
-├── backend/                   # API server
-│   ├── app/
-│   │   ├── api/               # Route handlers / controllers
-│   │   │   └── v1/            # Versioned API routes
-│   │   ├── core/              # Config, settings, security
-│   │   ├── models/            # Database ORM models
-│   │   ├── schemas/           # Pydantic / Zod request+response schemas
-│   │   ├── services/          # Business logic (cost aggregation, caching)
-│   │   └── providers/         # Cloud provider SDK wrappers
-│   │       ├── aws.py
-│   │       ├── azure.py
-│   │       └── gcp.py
-│   ├── tests/
-│   ├── requirements.txt
-│   └── pyproject.toml
-│
-├── docker-compose.yml
-├── .env.example
-├── .github/
-│   └── workflows/
-│       ├── ci.yml
-│       └── deploy.yml
-├── CLAUDE.md
-└── README.md
+├── index.html                      # Dashboard (HTML + CSS + JS, no build step)
+├── cloud-executive-summary.html    # Original version (hardcoded data, kept for reference)
+├── data/                           # Auto-discovered JSON data files
+│   ├── 2025-08.json                # Monthly: Aug 2025
+│   ├── 2025-09.json                # Monthly: Sep 2025
+│   ├── 2025-10.json                # Monthly: Oct 2025
+│   ├── 2025-11.json                # Monthly: Nov 2025
+│   ├── 2025-12.json                # Monthly: Dec 2025
+│   ├── 2026-01.json                # Monthly: Jan 2026 (includes top20)
+│   ├── config.json                 # Static data: MCA, AI Growth, Additional Metrics
+│   └── README.md                   # Data format documentation
+├── HOW-TO-HOST.md                  # Hosting instructions
+├── CLAUDE.md                       # This file
+└── README.md                       # Project README
 ```
 
 ---
 
-## Development Workflows
+## How It Works
 
-### Local Setup (Once Implemented)
-
-```bash
-# Clone and enter the project
-git clone <repo-url>
-cd Cloud_cost_usage_dashboard
-
-# Copy environment variables
-cp .env.example .env
-# Edit .env with your cloud credentials and database config
-
-# Start all services
-docker-compose up -d
-
-# OR run individually:
-# Backend
-cd backend && pip install -r requirements.txt && uvicorn app.main:app --reload
-
-# Frontend
-cd frontend && npm install && npm run dev
-```
-
-### Running Tests
-
-```bash
-# Backend tests
-cd backend && pytest --cov=app tests/
-
-# Frontend tests
-cd frontend && npm run test
-
-# Linting
-cd frontend && npm run lint
-cd backend && ruff check app/
-```
-
-### Common Commands
-
-```bash
-# Format code
-cd frontend && npm run format      # Prettier
-cd backend && ruff format app/     # Python formatter
-
-# Type checking
-cd frontend && npm run typecheck   # tsc --noEmit
-cd backend && mypy app/            # Python type checking
-
-# Database migrations (once ORM is set up)
-cd backend && alembic upgrade head
-cd backend && alembic revision --autogenerate -m "description"
-```
+1. `index.html` is served by GitHub Pages
+2. On page load, JS calls `api.github.com/repos/.../contents/data` to list all files
+3. Files matching `YYYY-MM.json` are fetched as monthly cost data
+4. `config.json` is fetched for static data (MCA, AI growth, etc.)
+5. The `DATA` object is assembled and the dashboard renders — same UI as the original
 
 ---
 
-## Code Conventions
+## Data Format
 
-### General
+### Monthly Files (`data/YYYY-MM.json`)
 
-- Prefer explicit over clever code; readability is paramount
-- Keep functions and components small and focused (single responsibility)
-- Never commit secrets, API keys, or credentials — use `.env` files
-- All environment variables must be documented in `.env.example` with placeholder values
-
-### TypeScript / Frontend
-
-- Use TypeScript strict mode (`"strict": true` in tsconfig)
-- Name components and files in PascalCase: `CostBarChart.tsx`, `DashboardPage.tsx`
-- Name hooks with `use` prefix: `useCostData`, `useFilters`
-- Name utility functions in camelCase: `formatCurrency`, `parseISODate`
-- Co-locate component styles, types, and tests with the component file
-- Prefer named exports over default exports for components (except pages)
-- Avoid `any` — define proper types in `src/types/`
-- Use React Query for all server state; use Zustand only for pure client-side state
-
-### Python / Backend
-
-- Follow PEP 8; use `ruff` for linting and formatting
-- Use type hints everywhere (`from __future__ import annotations`)
-- Name files and modules in snake_case: `cost_aggregation.py`, `aws_provider.py`
-- Name classes in PascalCase: `CostRecord`, `AWSProvider`
-- Use Pydantic models for all request/response validation
-- Keep route handlers thin — delegate logic to service layer
-- Never call cloud provider APIs directly from route handlers; always use the provider abstraction layer
-
-### API Design
-
-- All API routes are prefixed `/api/v1/`
-- Use nouns for resources: `/api/v1/costs`, `/api/v1/budgets`, `/api/v1/providers`
-- Use standard HTTP verbs: GET (read), POST (create), PUT/PATCH (update), DELETE (delete)
-- Return consistent JSON envelopes:
-  ```json
-  { "data": {...}, "meta": { "page": 1, "total": 100 } }
-  ```
-- Errors follow RFC 7807 Problem Details format:
-  ```json
-  { "type": "...", "title": "Not Found", "status": 404, "detail": "..." }
-  ```
-
-### Git Conventions
-
-- Branch naming: `feature/<short-description>`, `fix/<issue-id>-description`, `chore/<task>`
-- Commit messages follow Conventional Commits:
-  - `feat: add AWS Cost Explorer integration`
-  - `fix: correct currency rounding in cost aggregation`
-  - `chore: update dependencies`
-  - `docs: add setup instructions to README`
-  - `test: add unit tests for cost aggregation service`
-- Keep commits atomic — one logical change per commit
-- Open a PR for every change; no direct commits to `main`/`master`
-
----
-
-## Environment Variables
-
-Document all required environment variables here as the project grows. The `.env.example` file must stay up to date.
-
-### Expected Variables (Planned)
-
-```bash
-# App
-APP_ENV=development          # development | staging | production
-SECRET_KEY=changeme          # JWT signing secret
-
-# Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/cloud_costs
-
-# AWS
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_DEFAULT_REGION=us-east-1
-
-# Azure
-AZURE_SUBSCRIPTION_ID=
-AZURE_CLIENT_ID=
-AZURE_CLIENT_SECRET=
-AZURE_TENANT_ID=
-
-# GCP
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
-GCP_PROJECT_ID=
-
-# Frontend
-VITE_API_BASE_URL=http://localhost:8000
+```json
+{
+  "month": "Feb 2026",
+  "azure": { "cost": 1740906.54, "budget": 1850000 },
+  "aws": { "cost": 86200, "budget": 100000 },
+  "gcp": { "cost": 41200, "budget": 65000 },
+  "top20": [
+    { "name": "Data Services Production", "cost": 322681.04, "pct": 18.5 }
+  ]
+}
 ```
 
+- `month`: Display label (e.g. `"Feb 2026"`)
+- `azure/aws/gcp`: Each has `cost` and `budget` (numbers)
+- `top20`: Optional array of top subscriptions. Dashboard uses the latest month that has it.
+
+### Config File (`data/config.json`)
+
+Static data updated less frequently:
+- `mca`: MCA commitment (total, current, balance, note)
+- `aiGrowth`: AI cost growth data points
+- `additional`: Additional metrics table rows
+
 ---
 
-## Key Domain Concepts
+## Technology Stack
 
-Understanding these terms is important when reading or writing code:
-
-| Term | Meaning |
+| Layer | Tech |
 |---|---|
-| **Cost record** | A single billing line item from a cloud provider (service, amount, date, tags) |
-| **Provider** | A cloud platform: AWS, Azure, or GCP |
-| **Account / Subscription / Project** | Provider-specific grouping of resources (AWS account, Azure subscription, GCP project) |
-| **Tag** | A key-value label attached to cloud resources, used for cost allocation |
-| **Granularity** | Time resolution of cost data: `DAILY`, `MONTHLY` |
-| **Budget** | A user-defined spending limit that triggers alerts when approached/exceeded |
-| **Anomaly** | An unusual spike or drop in costs, detected by statistical comparison |
-| **Forecast** | Predicted future spend based on historical trends |
+| Hosting | GitHub Pages (free) |
+| Frontend | Single `index.html` — vanilla HTML/CSS/JS |
+| Fonts | Inter + JetBrains Mono (Google Fonts CDN) |
+| Data discovery | GitHub Contents API |
+| Data format | JSON files in `data/` |
+| Build step | None |
 
 ---
 
-## Testing Strategy
+## GitHub Pages Setup
 
-- **Unit tests**: Test pure functions, service logic, data transformations in isolation
-- **Integration tests**: Test API endpoints against a test database
-- **Component tests**: Test React components with React Testing Library
-- **E2E tests (optional)**: Playwright for critical user flows (login, view dashboard, export report)
-- Aim for >80% coverage on backend service and provider layers
-- Mock all external cloud API calls in tests using fixtures/stubs
+1. Go to repo **Settings > Pages**
+2. Source: **Deploy from a branch**
+3. Branch: `main`, folder: `/ (root)`
+4. Save — live at `https://Loki6669.github.io/Cloud_cost_usage_dashboard/`
 
 ---
 
-## Security Considerations
+## Dashboard Views
 
-- Never log raw cloud credentials or API keys
-- Rotate credentials regularly; use IAM roles with least-privilege for cloud access
-- All API endpoints must require authentication except `/health` and `/docs`
-- Validate and sanitize all user inputs before passing to cloud SDKs or queries
-- Use parameterized queries for all database operations (no raw SQL string interpolation)
-- CORS must be explicitly configured; do not use wildcard (`*`) in production
+| View | Description |
+|---|---|
+| **Overview** | KPI cards, spend/budget table, trend bars, YTD summary, MCA progress, AI growth, additional metrics, top 10 accounts |
+| **Monthly Detail** | Full month-by-month comparison table, per-cloud mini charts |
+| **Accounts** | Top 20 Azure subscription bar chart + detail table + additional measurements |
+
+### Interactive Controls
+- **Month pills**: Click any month to select it
+- **Cloud toggles**: Toggle AWS/Azure/GCP visibility on/off
+
+---
+
+## Adding a New Month (Workflow)
+
+1. Copy `data/2026-01.json` to `data/2026-02.json`
+2. Change `"month"` to `"Feb 2026"`
+3. Update the cost and budget numbers
+4. Optionally add/update `top20` array
+5. Commit and push — done
+
+---
+
+## Key Code Sections in `index.html`
+
+| Section | What It Does |
+|---|---|
+| `<style>` | All CSS — light theme, responsive, print-friendly |
+| `detectConfig()` | Auto-detects GitHub owner/repo from Pages URL |
+| `discoverFiles()` | Calls GitHub API to list `data/` contents |
+| `fetchJSON()` | Fetches individual JSON files from raw.githubusercontent |
+| `loadAllData()` | Orchestrates discovery + fetch + assembles DATA object |
+| `buildToolbar()` | Renders month pills and cloud toggles |
+| `getVisible()` | Filters DATA based on active cloud toggles |
+| `render()` | Main render function — builds all views |
+| `init()` | Entry point — loads data, then renders |
 
 ---
 
 ## For AI Assistants
 
-When contributing to this repository, follow these guidelines:
-
-1. **Read before writing** — Always read existing files before editing them
-2. **Stay minimal** — Only change what is necessary; do not refactor unrelated code
-3. **Match existing style** — Follow the conventions in whichever language/framework is already in use
-4. **Test your changes** — Run the relevant test suite and fix failures before committing
-5. **Update this file** — If you add a major component, new env variable, or change a workflow, update CLAUDE.md accordingly
-6. **No hardcoded secrets** — Use environment variables; update `.env.example` if you add new ones
-7. **Commit on the right branch** — Always check `git branch` before committing; the active branch should match the task's designated branch
-8. **Keep commits focused** — One logical change per commit with a Conventional Commits message
+1. **Read `index.html` before editing** — all code is in one file
+2. **Data is in `data/*.json`** — never hardcode data into the HTML
+3. **Keep it static** — no backend, no npm, no build tools
+4. **Don't change the JSON schema** without updating the loader in JS
+5. **The `detectConfig()` fallback** must match the actual GitHub owner/repo
+6. **Test locally** — open `index.html` in a browser, check console for errors
+7. **GitHub API rate limit** — 60 req/hour unauthenticated; don't add unnecessary API calls
+8. **Update this file** if you change data format, add views, or modify architecture
