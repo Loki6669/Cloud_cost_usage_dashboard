@@ -303,7 +303,7 @@ tr.nodata-row td{color:var(--muted);font-style:italic;text-align:center}
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     <span id="calBtnLabel">Pick Month</span>
   </button>
-  <span class="tip">&#9432; Select multiple months to compare</span>
+  <span class="tip">&#9432; Select multiple months to view side-by-side</span>
   <div class="tsep"></div>
   <span class="tlabel">Clouds</span>
   <div class="ctoggles" id="cloudToggles"></div>
@@ -335,6 +335,7 @@ tr.nodata-row td{color:var(--muted);font-style:italic;text-align:center}
     </div>
     <div class="cal-grid" id="calGrid"></div>
     <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:10px">Only months with data are selectable</p>
+    <button id="calApplyBtn" onclick="closeCalModal()" style="display:none;width:100%;margin-top:10px;padding:9px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">View Selected Months &#8594;</button>
   </div>
 </div>
 
@@ -516,6 +517,12 @@ function renderCalGrid(){
     lbl.textContent='Pick Month';
     btn2.classList.remove('active');
   }
+  // Show/hide Apply button
+  var applyBtn=document.getElementById('calApplyBtn');
+  if(applyBtn){
+    applyBtn.style.display=SEL.size>0?'block':'none';
+    applyBtn.textContent=SEL.size>1?'View '+SEL.size+' Selected Months \u2192':'View '+DATA.months[[...SEL][0]]+' \u2192';
+  }
 }
 window.setView=function(v,el){
   VIEW=v;
@@ -552,7 +559,7 @@ function buildToolbar(){
   }).join('');
   // Compare badge
   var ns=SEL.size;
-  document.getElementById('cmpBadge').innerHTML=ns>1?'<div class="compare-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg> Comparing '+ns+' months</div>':'';
+  document.getElementById('cmpBadge').innerHTML=ns>1?'<div class="compare-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg> '+(VIEW==='overview'?'Viewing':'Comparing')+' '+ns+' months</div>':'';
   // Calendar button label
   var lbl=document.getElementById('calBtnLabel');
   var btn2=document.getElementById('calTriggerBtn');
@@ -870,7 +877,86 @@ function renderOverviewSingle(idx){
 }
 
 /* ═══════════════════════════════════════════════════
-   11. RENDER — COMPARISON MODE
+   11. RENDER — OVERVIEW MULTI-MONTH
+═══════════════════════════════════════════════════ */
+function renderOverviewMulti(selArr){
+  var h='';
+  // Banner
+  h+='<div class="cmp-banner" style="margin-bottom:20px"><div>';
+  h+='<div class="cmp-title">Multi-Month Overview</div>';
+  h+='<div class="cmp-months">'+selArr.map(function(i){return DATA.months[i];}).join(' &bull; ')+'</div>';
+  h+='</div><div class="cmp-chips">'+selArr.map(function(mi,ci){
+    var clr=CMP_CLR[ci%CMP_CLR.length];
+    return '<div class="cmp-chip" style="border-color:'+clr+'"><span style="width:8px;height:8px;background:'+clr+';border-radius:2px;display:inline-block"></span>'+DATA.months[mi]+'</div>';
+  }).join('')+'</div></div>';
+
+  // KPI section per selected month
+  selArr.forEach(function(idx,ci){
+    var clr=CMP_CLR[ci%CMP_CLR.length];
+    var rows=getCloudRows(idx);
+    var tC=rows.reduce(function(s,r){return s+r.c;},0);
+    var tB=rows.reduce(function(s,r){return s+r.b;},0);
+    var tOver=tC>tB, tUtil=pctN(tC,tB);
+    h+='<div style="border-left:3px solid '+clr+';padding-left:12px;margin-bottom:20px">';
+    h+='<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:'+clr+';margin-bottom:8px">'+DATA.months[idx]+'</div>';
+    h+='<div class="kpi-row">';
+    // Total
+    h+='<div class="kpi" style="--kc:'+(tOver?'var(--red)':'var(--green)')+'"><div class="kpi-lbl">Total Cloud Spend</div>';
+    h+='<div class="kpi-val">'+fK(tC)+'</div>';
+    h+='<div class="kpi-foot"><span class="kpi-bud">Budget '+fK(tB)+'</span>';
+    h+='<span class="delta '+(tOver?'bad':'good')+'">'+(tOver?'▲ Over':'▼ Under')+'</span></div>';
+    h+='<div class="kpi-bar"><div class="kpi-bar-fill" style="width:'+clamp(tUtil,0,100)+'%;background:'+(tOver?'var(--red)':'var(--green)')+'"></div></div></div>';
+    // Per-cloud
+    rows.forEach(function(r){
+      var over=r.c>r.b, util=pctN(r.c,r.b);
+      h+='<div class="kpi" style="--kc:'+r.clr+'"><div class="kpi-lbl"><span class="dot" style="background:'+r.clr+'"></span>'+r.n+'</div>';
+      if(!r.has){
+        h+='<div class="kpi-val" style="color:var(--muted);font-size:18px">No Data</div>';
+      } else {
+        h+='<div class="kpi-val" style="color:'+r.clr+'">'+fK(r.c)+'</div>';
+        h+='<div class="kpi-foot"><span class="kpi-bud">Budget '+fK(r.b)+' &middot; '+util+'%</span>';
+        h+='<span class="delta '+(over?'bad':'good')+'">'+(over?'Over':'Under')+'</span></div>';
+        h+='<div class="kpi-bar"><div class="kpi-bar-fill" style="width:'+clamp(util,0,100)+'%;background:'+r.clr+'"></div></div>';
+      }
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+
+  // Trend chart
+  var series=[];
+  if(CL.AZ) series.push({n:'Azure',clr:AZ_CLR,costs:DATA.azure.costs,budgets:DATA.azure.budgets,hasData:DATA.azure.hasData});
+  if(CL.AWS) series.push({n:'AWS',clr:AWS_CLR,costs:DATA.aws.costs,budgets:DATA.aws.budgets,hasData:DATA.aws.hasData});
+  if(CL.GCP) series.push({n:'GCP',clr:GCP_CLR,costs:DATA.gcp.costs,budgets:DATA.gcp.budgets,hasData:DATA.gcp.hasData});
+  h+='<div class="card mb"><div class="card-hdr"><div><div class="card-title">Spend Trend</div>';
+  h+='<div class="card-sub">Selected months highlighted &bull; click dots to toggle</div></div></div>';
+  h+='<div class="chart-wrap">'+svgLine(series,DATA.months,SEL)+'</div>';
+  h+='<div class="chart-legend">'+series.map(function(s){return '<span class="leg-item"><span class="leg-dot" style="background:'+s.clr+'"></span>'+s.n+'</span>';}).join('')+'<span class="leg-item"><span class="leg-dashed" style="border-color:#94a3b8"></span>Budget</span></div></div>';
+
+  // Spend comparison table
+  var cloudDefs=[];
+  if(CL.AZ) cloudDefs.push({n:'Azure',clr:AZ_CLR,costs:DATA.azure.costs,has:DATA.azure.hasData,budgets:DATA.azure.budgets});
+  if(CL.AWS) cloudDefs.push({n:'AWS',clr:AWS_CLR,costs:DATA.aws.costs,has:DATA.aws.hasData,budgets:DATA.aws.budgets});
+  if(CL.GCP) cloudDefs.push({n:'GCP',clr:GCP_CLR,costs:DATA.gcp.costs,has:DATA.gcp.hasData,budgets:DATA.gcp.budgets});
+  h+='<div class="card mb"><div class="card-hdr"><div class="card-title">Spend vs Budget &mdash; Selected Months</div></div>';
+  h+='<div class="tscroll"><table><thead><tr><th>Cloud</th>';
+  selArr.forEach(function(mi){h+='<th class="r">'+DATA.months[mi]+'</th>';});
+  h+='</tr></thead><tbody>';
+  cloudDefs.forEach(function(r){
+    h+='<tr><td class="b"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+r.clr+';margin-right:8px;vertical-align:middle"></span>'+r.n+'</td>';
+    selArr.forEach(function(mi){
+      h+=r.has[mi]?'<td class="m r">'+f$(r.costs[mi])+'</td>':'<td style="color:var(--muted);font-style:italic;text-align:right;font-size:11px">No data</td>';
+    });
+    h+='</tr>';
+  });
+  h+='<tr class="tot"><td>Total</td>';
+  selArr.forEach(function(mi){h+='<td class="m r">'+f$(getTotal(mi))+'</td>';});
+  h+='</tr></tbody></table></div></div>';
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════
+   12. RENDER — COMPARISON MODE (Compare tab only)
 ═══════════════════════════════════════════════════ */
 function renderComparison(){
   var selArr=[...SEL].sort(function(a,b){return a-b;});
@@ -1272,7 +1358,8 @@ function renderCompareView(){
 function render(){
   var h='';
   if(VIEW==='overview'){
-    h=SEL.size===1?renderOverviewSingle([...SEL][0]):renderComparison();
+    var selArr=[...SEL].sort(function(a,b){return a-b;});
+    h=selArr.length===1?renderOverviewSingle(selArr[0]):renderOverviewMulti(selArr);
   } else if(VIEW==='monthly'){
     h=renderMonthly();
   } else if(VIEW==='accounts'){
