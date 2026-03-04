@@ -251,6 +251,14 @@ def main():
     else:
         print(f"\n  ↷ config.json already exists — not overwritten")
 
+    # Always rewrite manifest.json so the dashboard can discover files
+    # without hitting the GitHub API (avoids rate limits & works on private repos)
+    manifest_files = [f"{k}.json" for k in all_keys] + ["config.json"]
+    manifest_path = os.path.join(DATA, 'manifest.json')
+    with open(manifest_path, 'w') as f:
+        json.dump({"files": manifest_files}, f, indent=2)
+    print(f"  ✓ manifest.json updated ({len(manifest_files)} entries)")
+
     print(f"\nDone! {len(all_keys)} JSON file(s) written to data/")
     print("Commit and push to update the live dashboard.\n")
 
