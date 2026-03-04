@@ -548,7 +548,7 @@ function buildToolbar(){
   ];
   document.getElementById('cloudToggles').innerHTML=clouds.map(function(c){
     var on=CL[c.k];
-    return '<button class="ctog'+(on?'':' off')+'" onclick="togCloud(''+c.k+'')" style="border-color:'+(on?c.clr:'var(--border)')+'"><span class="cdot" style="background:'+c.clr+'"></span>'+c.lbl+'</button>';
+    return '<button class="ctog'+(on?'':' off')+'" onclick="togCloud(\''+c.k+'\')" style="border-color:'+(on?c.clr:'var(--border)')+'"><span class="cdot" style="background:'+c.clr+'"></span>'+c.lbl+'</button>';
   }).join('');
   // Compare badge
   var ns=SEL.size;
