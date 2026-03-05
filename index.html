@@ -28,7 +28,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* ── NAV ── */
 .nav{background:var(--nav);height:54px;display:flex;align-items:center;padding:0 32px;gap:0;position:sticky;top:0;z-index:300;border-bottom:1px solid var(--nav2)}
 .nav-brand{display:flex;align-items:center;gap:10px;margin-right:24px;flex-shrink:0}
-.nav-logo{width:30px;height:30px;background:linear-gradient(135deg,#3b82f6 0%,#6366f1 100%);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;letter-spacing:-.5px;flex-shrink:0}
+.nav-logo{height:34px;display:flex;align-items:center;flex-shrink:0}
+.nav-logo svg{height:34px;width:auto}
 .nav-org{font-size:11px;font-weight:800;color:#f1f5f9;letter-spacing:-.01em}
 .nav-sub{font-size:10px;color:#475569;font-weight:500;margin-top:1px}
 .nav-divider{width:1px;height:22px;background:var(--nav2);margin:0 2px;flex-shrink:0}
@@ -262,10 +263,38 @@ tr.nodata-row td{color:var(--muted);font-style:italic;text-align:center}
 <!-- ╚══════════════════════════════════════════════════════╝ -->
 <nav class="nav">
   <div class="nav-brand">
-    <div class="nav-logo">M</div>
-    <div>
-      <div class="nav-org">Platform Economics</div>
-      <div class="nav-sub">MGM Resorts International</div>
+    <div class="nav-logo">
+      <!-- MGM Resorts International logo -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 38" role="img" aria-label="MGM Resorts International">
+        <rect width="160" height="38" rx="4" fill="#111111"/>
+        <!-- Lion silhouette -->
+        <g fill="#C9A84C" transform="translate(8,3)">
+          <!-- Head -->
+          <ellipse cx="16" cy="10" rx="7" ry="6.5"/>
+          <!-- Mane -->
+          <ellipse cx="16" cy="11" rx="9.5" ry="8.5" fill="none" stroke="#C9A84C" stroke-width="2.2"/>
+          <!-- Ear left -->
+          <polygon points="10,4 8,0 13,3"/>
+          <!-- Ear right -->
+          <polygon points="22,4 24,0 19,3"/>
+          <!-- Body -->
+          <ellipse cx="16" cy="24" rx="6" ry="7"/>
+          <!-- Front legs -->
+          <rect x="11" y="29" width="2.5" height="5" rx="1.2"/>
+          <rect x="18.5" y="29" width="2.5" height="5" rx="1.2"/>
+          <!-- Face detail: eyes -->
+          <circle cx="13.5" cy="10" r="1.1" fill="#111"/>
+          <circle cx="18.5" cy="10" r="1.1" fill="#111"/>
+          <!-- Nose -->
+          <ellipse cx="16" cy="13" rx="1.4" ry="0.9" fill="#8B6914"/>
+        </g>
+        <!-- MGM text -->
+        <text x="40" y="16" font-family="Georgia,serif" font-size="13" font-weight="700" fill="#C9A84C" letter-spacing="2">MGM</text>
+        <!-- RESORTS text -->
+        <text x="40" y="27" font-family="Arial,sans-serif" font-size="7.5" font-weight="600" fill="#C9A84C" letter-spacing="2.5">RESORTS</text>
+        <!-- INTERNATIONAL text -->
+        <text x="40" y="35.5" font-family="Arial,sans-serif" font-size="6" font-weight="400" fill="#9A7A34" letter-spacing="1.8">INTERNATIONAL</text>
+      </svg>
     </div>
   </div>
   <div class="nav-divider"></div>
