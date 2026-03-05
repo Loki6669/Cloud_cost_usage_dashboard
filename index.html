@@ -937,18 +937,19 @@ function renderOverviewSingle(idx){
   } else {
     h+='<div class="card"><div class="empty"><strong>📊</strong>No additional metrics in config.json</div></div>';
   }
-  // Top 10
-  if(DATA.top20&&DATA.top20.length>0){
-    var t10=DATA.top20.slice(0,10);
+  // Top 10 — use selected month's data
+  var selTop20=DATA.top20Data[idx]&&DATA.top20Data[idx].length>0?DATA.top20Data[idx]:null;
+  if(selTop20){
+    var t10=selTop20.slice(0,10);
     var t10mx=t10[0].pct;
-    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+(DATA.top20Month||'latest')+'</div></div>';
+    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+DATA.months[idx]+'</div></div>';
     t10.forEach(function(a,i){
       var clr=i<3?'#1e40af':i<7?'#3b82f6':'#93c5fd';
       h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((a.pct/t10mx)*100).toFixed(1)+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div></div>';
     });
     h+='</div>';
   } else {
-    h+='<div class="card"><div class="empty"><strong>📋</strong>No account data available.<br>Add a <code>top20</code> array to your latest monthly JSON.</div></div>';
+    h+='<div class="card"><div class="empty"><strong>📋</strong>No account data available.<br>Add a <code>top20</code> array to your monthly JSON.</div></div>';
   }
   h+='</div>';
   return h;
@@ -1092,22 +1093,26 @@ function renderOverviewMulti(selArr){
   h+='<td class="m r">'+fK(tC)+'</td></tr>';
   h+='</tbody></table></div></div>';
 
-  // Top 10 from latest month in range that has top20
-  var latestTop20=null,latestTop20Mo=null;
-  for(var ti=selArr.length-1;ti>=0;ti--){
-    if(DATA.top20Data[selArr[ti]]&&DATA.top20Data[selArr[ti]].length>0){
-      latestTop20=DATA.top20Data[selArr[ti]];
-      latestTop20Mo=DATA.months[selArr[ti]];
-      break;
-    }
-  }
-  if(latestTop20){
-    var t10=latestTop20.slice(0,10);
+  // Top 10 — aggregate across selected range
+  var aggCostMap={};
+  selArr.forEach(function(idx2){
+    var t20=DATA.top20Data[idx2];
+    if(!t20||t20.length===0) return;
+    t20.forEach(function(sub){
+      if(!aggCostMap[sub.name]) aggCostMap[sub.name]=0;
+      aggCostMap[sub.name]+=sub.cost;
+    });
+  });
+  var aggMerged=Object.keys(aggCostMap).map(function(name){
+    return {name:name,cost:aggCostMap[name],pct:tC>0?parseFloat((aggCostMap[name]/aggAz*100).toFixed(1)):0};
+  }).sort(function(a,b){return b.cost-a.cost;});
+  if(aggMerged.length>0){
+    var t10=aggMerged.slice(0,10);
     var t10mx=t10[0].pct;
-    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+latestTop20Mo+'</div></div>';
+    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+rangeLabel+'</div></div>';
     t10.forEach(function(a,i){
       var clr=i<3?'#1e40af':i<7?'#3b82f6':'#93c5fd';
-      h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((a.pct/t10mx)*100).toFixed(1)+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div></div>';
+      h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((t10mx>0?(a.pct/t10mx)*100:0).toFixed(1))+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div></div>';
     });
     h+='</div>';
   }
