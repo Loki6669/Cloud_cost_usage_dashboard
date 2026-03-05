@@ -1307,28 +1307,41 @@ function renderMonthly(){
 function renderAccounts(){
   var selArr=[...SEL].sort(function(a,b){return a-b;});
   var h='';
+  var rangeLabel=selArr.length>1?DATA.months[selArr[0]]+' → '+DATA.months[selArr[selArr.length-1]]:DATA.months[selArr[0]];
 
-  // Find the latest month in selected range that has top20 data
-  var top20=null, top20Mo=null;
-  for(var ti=selArr.length-1;ti>=0;ti--){
-    var idx=selArr[ti];
-    if(DATA.top20Data[idx]&&DATA.top20Data[idx].length>0){
-      top20=DATA.top20Data[idx];
-      top20Mo=DATA.months[idx];
-      break;
-    }
-  }
+  // Aggregate top20 across all selected months: sum costs by subscription name
+  var costMap={};  // name -> total cost
+  var monthsWithData=[];
+  selArr.forEach(function(idx){
+    var t20=DATA.top20Data[idx];
+    if(!t20||t20.length===0) return;
+    monthsWithData.push(DATA.months[idx]);
+    t20.forEach(function(sub){
+      if(!costMap[sub.name]) costMap[sub.name]=0;
+      costMap[sub.name]+=sub.cost;
+    });
+  });
 
-  if(!top20||top20.length===0){
-    var rangeLabel=selArr.length>1?DATA.months[selArr[0]]+' → '+DATA.months[selArr[selArr.length-1]]:DATA.months[selArr[0]];
+  // Convert map to sorted array, compute percentages based on total Azure spend in range
+  var totalAzure=selArr.reduce(function(s,i){return s+(DATA.azure.hasData[i]?DATA.azure.costs[i]:0);},0);
+  var merged=Object.keys(costMap).map(function(name){
+    var cost=costMap[name];
+    return {name:name, cost:cost, pct:totalAzure>0?parseFloat((cost/totalAzure*100).toFixed(1)):0};
+  });
+  merged.sort(function(a,b){return b.cost-a.cost;});
+  var top20=merged.slice(0,20);
+
+  if(top20.length===0){
     return '<div class="card"><div class="empty"><strong>📋</strong>No account data available for '+rangeLabel+'.<br>Add a <code>"top20"</code> array to your monthly JSON files.</div></div>';
   }
+
   var mx=top20[0].pct;
   var totalPct=top20.reduce(function(s,a){return s+a.pct;},0).toFixed(1);
+  var dataSrc=monthsWithData.length>1?monthsWithData.length+' months aggregated':monthsWithData[0];
 
   h+='<div class="g2">';
   // Bar chart
-  h+='<div class="card"><div class="card-hdr"><div><div class="card-title">Top 20 Azure Subscriptions</div><div class="card-sub">By share of total Azure spend &bull; '+top20Mo+'</div></div><span class="card-badge" style="background:var(--azure-lt);color:var(--azure)">Top 20 = '+totalPct+'%</span></div>';
+  h+='<div class="card"><div class="card-hdr"><div><div class="card-title">Top 20 Azure Subscriptions</div><div class="card-sub">By share of total Azure spend &bull; '+dataSrc+'</div></div><span class="card-badge" style="background:var(--azure-lt);color:var(--azure)">Top 20 = '+totalPct+'%</span></div>';
   top20.forEach(function(a,i){
     var clr=i<3?'#1d4ed8':i<7?'#3b82f6':i<14?'#60a5fa':'#93c5fd';
     h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((a.pct/mx)*100).toFixed(1)+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div><div class="hbar-cost">'+fK(a.cost)+'</div></div>';
@@ -1340,7 +1353,7 @@ function renderAccounts(){
 
   // Right column
   h+='<div style="display:flex;flex-direction:column;gap:16px">';
-  h+='<div class="card"><div class="card-hdr"><div class="card-title">Subscription Detail</div><div class="card-sub">'+top20Mo+' &mdash; full cost breakdown</div></div>';
+  h+='<div class="card"><div class="card-hdr"><div class="card-title">Subscription Detail</div><div class="card-sub">'+rangeLabel+' &mdash; costs aggregated across selected months</div></div>';
   h+='<div class="tscroll"><table><thead><tr><th>#</th><th>Name</th><th class="r">Cost</th><th class="r">%</th><th class="r">Share</th></tr></thead><tbody>';
   top20.forEach(function(a,i){
     var clr=i<3?'#1d4ed8':i<7?'#3b82f6':'#60a5fa';
