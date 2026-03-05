@@ -613,13 +613,17 @@ function buildToolbar(){
   document.getElementById('navDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
   // Cloud toggles
   var clouds=[
-    {k:'AZ',lbl:'Azure',clr:AZ_CLR},
-    {k:'AWS',lbl:'AWS',clr:AWS_CLR},
-    {k:'GCP',lbl:'GCP',clr:GCP_CLR}
+    {k:'AZ',lbl:'Azure',clr:AZ_CLR,dataKey:'azure'},
+    {k:'AWS',lbl:'AWS',clr:AWS_CLR,dataKey:'aws'},
+    {k:'GCP',lbl:'GCP',clr:GCP_CLR,dataKey:'gcp'}
   ];
+  var selArr=[...SEL];
   document.getElementById('cloudToggles').innerHTML=clouds.map(function(c){
     var on=CL[c.k];
-    return '<button class="ctog'+(on?'':' off')+'" onclick="togCloud(\''+c.k+'\')" style="border-color:'+(on?c.clr:'var(--border)')+'"><span class="cdot" style="background:'+c.clr+'"></span>'+c.lbl+'</button>';
+    var hasAnyData=!DATA||selArr.length===0||selArr.some(function(i){return DATA[c.dataKey]&&DATA[c.dataKey].hasData[i];});
+    var noDataBadge=on&&!hasAnyData?'<span style="font-size:9px;font-weight:500;color:var(--muted);margin-left:2px">no data</span>':'';
+    var borderClr=on?(hasAnyData?c.clr:'#94a3b8'):'var(--border)';
+    return '<button class="ctog'+(on?'':' off')+'" onclick="togCloud(\''+c.k+'\')" style="border-color:'+borderClr+';opacity:'+(on&&!hasAnyData?0.55:1)+'"><span class="cdot" style="background:'+c.clr+'"></span>'+c.lbl+noDataBadge+'</button>';
   }).join('');
   // Badge
   var ns=SEL.size;
@@ -689,19 +693,35 @@ function svgLine(series,months,selSet){
   // Series
   series.forEach(function(s){
     if(!s.costs.some(function(v){return v>0;})) return;
-    // Budget dashed
-    var bp=s.budgets.map(function(b,i){return (i===0?'M':'L')+xS(i).toFixed(1)+','+yS(b).toFixed(1);}).join(' ');
-    svg+='<path d="'+bp+'" fill="none" stroke="'+s.clr+'" stroke-width="1" stroke-dasharray="4,4" opacity="0.35"/>';
-    // Area
-    var cp=s.costs.map(function(c,i){return (i===0?'M':'L')+xS(i).toFixed(1)+','+yS(c).toFixed(1);}).join(' ');
-    svg+='<path d="'+cp+' L'+xS(n-1).toFixed(1)+','+h+' L0,'+h+' Z" fill="'+s.clr+'" opacity="0.05"/>';
-    // Line
-    svg+='<path d="'+cp+'" fill="none" stroke="'+s.clr+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    // Build segments — break at no-data months so line doesn't dip to 0
+    var cSegs=[],bSegs=[],cCur=[],bCur=[];
+    s.costs.forEach(function(c,i){
+      var hasD=s.hasData[i];
+      if(hasD){cCur.push({i:i,v:c});}else{if(cCur.length)cSegs.push(cCur);cCur=[];}
+    });
+    if(cCur.length) cSegs.push(cCur);
+    s.budgets.forEach(function(b,i){
+      var hasD=s.hasData[i];
+      if(hasD){bCur.push({i:i,v:b});}else{if(bCur.length)bSegs.push(bCur);bCur=[];}
+    });
+    if(bCur.length) bSegs.push(bCur);
+    // Budget dashed segments
+    bSegs.forEach(function(pts){
+      var bp=pts.map(function(p,j){return (j===0?'M':'L')+xS(p.i).toFixed(1)+','+yS(p.v).toFixed(1);}).join(' ');
+      svg+='<path d="'+bp+'" fill="none" stroke="'+s.clr+'" stroke-width="1" stroke-dasharray="4,4" opacity="0.35"/>';
+    });
+    // Cost area + line segments
+    cSegs.forEach(function(pts){
+      var cp=pts.map(function(p,j){return (j===0?'M':'L')+xS(p.i).toFixed(1)+','+yS(p.v).toFixed(1);}).join(' ');
+      if(pts.length>1){
+        svg+='<path d="'+cp+' L'+xS(pts[pts.length-1].i).toFixed(1)+','+h+' L'+xS(pts[0].i).toFixed(1)+','+h+' Z" fill="'+s.clr+'" opacity="0.05"/>';
+      }
+      svg+='<path d="'+cp+'" fill="none" stroke="'+s.clr+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    });
     // Dots
     s.costs.forEach(function(c,i){
       if(c===0&&!s.hasData[i]){
-        // No-data marker
-        var cx=xS(i).toFixed(1),cy=(h/2).toFixed(1);
+        var cx=xS(i).toFixed(1);
         svg+='<line x1="'+cx+'" y1="'+(h*0.3).toFixed(1)+'" x2="'+cx+'" y2="'+(h*0.7).toFixed(1)+'" stroke="'+s.clr+'" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>';
         return;
       }
