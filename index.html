@@ -1113,6 +1113,41 @@ function renderOverviewMulti(selArr){
   h+='<td class="m r">'+fK(tC)+'</td></tr>';
   h+='</tbody></table></div></div>';
 
+  // ── AI Growth + Additional Metrics + Top 10 ───────────
+  h+='<div class="g3">';
+  // AI Growth
+  if(DATA.aiGrowth&&DATA.aiGrowth.length>0){
+    var aiMax=Math.max.apply(null,DATA.aiGrowth.map(function(d){return d.c;}));
+    var aiLast=DATA.aiGrowth[DATA.aiGrowth.length-1].c;
+    var aiFirst=DATA.aiGrowth[0].c;
+    var growPct=((aiLast/aiFirst-1)*100).toFixed(0);
+    h+='<div class="card"><div class="card-hdr"><div><div class="card-title">AI Spend Growth &mdash; AWS</div><div class="card-sub">Generative AI workload costs</div></div><span class="card-badge" style="background:var(--aws-lt);color:var(--aws)">▲ '+growPct+'%</span></div>';
+    h+='<div class="mini-bars">';
+    DATA.aiGrowth.forEach(function(d,i){
+      var ht=Math.round((d.c/aiMax)*90);
+      var isLast=i===DATA.aiGrowth.length-1;
+      h+='<div class="mini-bar-wrap">';
+      h+='<div class="mini-bar-val" style="color:'+(isLast?'var(--orange)':'var(--sub)')+'">'+fK(d.c)+'</div>';
+      h+='<div class="mini-bar" style="height:'+ht+'px;background:'+(isLast?'linear-gradient(180deg,#f59e0b,#d97706)':'#fde68a')+'"></div>';
+      h+='<div class="mini-bar-lbl">'+d.m+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+    h+='<p style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px;border-top:1px solid var(--border);padding-top:8px">'+growPct+'% cost increase across tracked AI workloads</p>';
+    h+='</div>';
+  } else {
+    h+='<div class="card"><div class="empty"><strong>📈</strong>No AI growth data in config.json</div></div>';
+  }
+  // Additional Metrics
+  if(DATA.additional&&DATA.additional.length>0){
+    h+='<div class="card"><div class="card-hdr"><div class="card-title">Additional Metrics</div><div class="card-sub">Operational benchmarks</div></div>';
+    DATA.additional.forEach(function(r){
+      h+='<div class="irow"><span class="ikey">'+r.metric+'</span><div style="display:flex;gap:10px;align-items:center"><span style="font-size:10px;color:var(--muted)">'+r.may+'</span><span style="font-size:10px;color:var(--muted)">→</span><span class="ival" style="color:var(--azure)">'+r.nov+'</span></div></div>';
+    });
+    h+='</div>';
+  } else {
+    h+='<div class="card"><div class="empty"><strong>📊</strong>No additional metrics in config.json</div></div>';
+  }
   // Top 10 — aggregate across selected range
   var aggCostMap={};
   selArr.forEach(function(idx2){
@@ -1135,7 +1170,10 @@ function renderOverviewMulti(selArr){
       h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((t10mx>0?(a.pct/t10mx)*100:0).toFixed(1))+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div></div>';
     });
     h+='</div>';
+  } else {
+    h+='<div class="card"><div class="empty"><strong>📋</strong>No account data available.<br>Add a <code>top20</code> array to your monthly JSON files.</div></div>';
   }
+  h+='</div>';
 
   return h;
 }
