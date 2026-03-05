@@ -613,13 +613,17 @@ function buildToolbar(){
   document.getElementById('navDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
   // Cloud toggles
   var clouds=[
-    {k:'AZ',lbl:'Azure',clr:AZ_CLR},
-    {k:'AWS',lbl:'AWS',clr:AWS_CLR},
-    {k:'GCP',lbl:'GCP',clr:GCP_CLR}
+    {k:'AZ',lbl:'Azure',clr:AZ_CLR,dataKey:'azure'},
+    {k:'AWS',lbl:'AWS',clr:AWS_CLR,dataKey:'aws'},
+    {k:'GCP',lbl:'GCP',clr:GCP_CLR,dataKey:'gcp'}
   ];
+  var selArr=[...SEL];
   document.getElementById('cloudToggles').innerHTML=clouds.map(function(c){
     var on=CL[c.k];
-    return '<button class="ctog'+(on?'':' off')+'" onclick="togCloud(\''+c.k+'\')" style="border-color:'+(on?c.clr:'var(--border)')+'"><span class="cdot" style="background:'+c.clr+'"></span>'+c.lbl+'</button>';
+    var hasAnyData=!DATA||selArr.length===0||selArr.some(function(i){return DATA[c.dataKey]&&DATA[c.dataKey].hasData[i];});
+    var noDataBadge=on&&!hasAnyData?'<span style="font-size:9px;font-weight:500;color:var(--muted);margin-left:2px">no data</span>':'';
+    var borderClr=on?(hasAnyData?c.clr:'#94a3b8'):'var(--border)';
+    return '<button class="ctog'+(on?'':' off')+'" onclick="togCloud(\''+c.k+'\')" style="border-color:'+borderClr+';opacity:'+(on&&!hasAnyData?0.55:1)+'"><span class="cdot" style="background:'+c.clr+'"></span>'+c.lbl+noDataBadge+'</button>';
   }).join('');
   // Badge
   var ns=SEL.size;
@@ -689,19 +693,35 @@ function svgLine(series,months,selSet){
   // Series
   series.forEach(function(s){
     if(!s.costs.some(function(v){return v>0;})) return;
-    // Budget dashed
-    var bp=s.budgets.map(function(b,i){return (i===0?'M':'L')+xS(i).toFixed(1)+','+yS(b).toFixed(1);}).join(' ');
-    svg+='<path d="'+bp+'" fill="none" stroke="'+s.clr+'" stroke-width="1" stroke-dasharray="4,4" opacity="0.35"/>';
-    // Area
-    var cp=s.costs.map(function(c,i){return (i===0?'M':'L')+xS(i).toFixed(1)+','+yS(c).toFixed(1);}).join(' ');
-    svg+='<path d="'+cp+' L'+xS(n-1).toFixed(1)+','+h+' L0,'+h+' Z" fill="'+s.clr+'" opacity="0.05"/>';
-    // Line
-    svg+='<path d="'+cp+'" fill="none" stroke="'+s.clr+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    // Build segments — break at no-data months so line doesn't dip to 0
+    var cSegs=[],bSegs=[],cCur=[],bCur=[];
+    s.costs.forEach(function(c,i){
+      var hasD=s.hasData[i];
+      if(hasD){cCur.push({i:i,v:c});}else{if(cCur.length)cSegs.push(cCur);cCur=[];}
+    });
+    if(cCur.length) cSegs.push(cCur);
+    s.budgets.forEach(function(b,i){
+      var hasD=s.hasData[i];
+      if(hasD){bCur.push({i:i,v:b});}else{if(bCur.length)bSegs.push(bCur);bCur=[];}
+    });
+    if(bCur.length) bSegs.push(bCur);
+    // Budget dashed segments
+    bSegs.forEach(function(pts){
+      var bp=pts.map(function(p,j){return (j===0?'M':'L')+xS(p.i).toFixed(1)+','+yS(p.v).toFixed(1);}).join(' ');
+      svg+='<path d="'+bp+'" fill="none" stroke="'+s.clr+'" stroke-width="1" stroke-dasharray="4,4" opacity="0.35"/>';
+    });
+    // Cost area + line segments
+    cSegs.forEach(function(pts){
+      var cp=pts.map(function(p,j){return (j===0?'M':'L')+xS(p.i).toFixed(1)+','+yS(p.v).toFixed(1);}).join(' ');
+      if(pts.length>1){
+        svg+='<path d="'+cp+' L'+xS(pts[pts.length-1].i).toFixed(1)+','+h+' L'+xS(pts[0].i).toFixed(1)+','+h+' Z" fill="'+s.clr+'" opacity="0.05"/>';
+      }
+      svg+='<path d="'+cp+'" fill="none" stroke="'+s.clr+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    });
     // Dots
     s.costs.forEach(function(c,i){
       if(c===0&&!s.hasData[i]){
-        // No-data marker
-        var cx=xS(i).toFixed(1),cy=(h/2).toFixed(1);
+        var cx=xS(i).toFixed(1);
         svg+='<line x1="'+cx+'" y1="'+(h*0.3).toFixed(1)+'" x2="'+cx+'" y2="'+(h*0.7).toFixed(1)+'" stroke="'+s.clr+'" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>';
         return;
       }
@@ -937,18 +957,19 @@ function renderOverviewSingle(idx){
   } else {
     h+='<div class="card"><div class="empty"><strong>📊</strong>No additional metrics in config.json</div></div>';
   }
-  // Top 10
-  if(DATA.top20&&DATA.top20.length>0){
-    var t10=DATA.top20.slice(0,10);
+  // Top 10 — use selected month's data
+  var selTop20=DATA.top20Data[idx]&&DATA.top20Data[idx].length>0?DATA.top20Data[idx]:null;
+  if(selTop20){
+    var t10=selTop20.slice(0,10);
     var t10mx=t10[0].pct;
-    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+(DATA.top20Month||'latest')+'</div></div>';
+    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+DATA.months[idx]+'</div></div>';
     t10.forEach(function(a,i){
       var clr=i<3?'#1e40af':i<7?'#3b82f6':'#93c5fd';
       h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((a.pct/t10mx)*100).toFixed(1)+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div></div>';
     });
     h+='</div>';
   } else {
-    h+='<div class="card"><div class="empty"><strong>📋</strong>No account data available.<br>Add a <code>top20</code> array to your latest monthly JSON.</div></div>';
+    h+='<div class="card"><div class="empty"><strong>📋</strong>No account data available.<br>Add a <code>top20</code> array to your monthly JSON.</div></div>';
   }
   h+='</div>';
   return h;
@@ -1092,25 +1113,67 @@ function renderOverviewMulti(selArr){
   h+='<td class="m r">'+fK(tC)+'</td></tr>';
   h+='</tbody></table></div></div>';
 
-  // Top 10 from latest month in range that has top20
-  var latestTop20=null,latestTop20Mo=null;
-  for(var ti=selArr.length-1;ti>=0;ti--){
-    if(DATA.top20Data[selArr[ti]]&&DATA.top20Data[selArr[ti]].length>0){
-      latestTop20=DATA.top20Data[selArr[ti]];
-      latestTop20Mo=DATA.months[selArr[ti]];
-      break;
-    }
-  }
-  if(latestTop20){
-    var t10=latestTop20.slice(0,10);
-    var t10mx=t10[0].pct;
-    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+latestTop20Mo+'</div></div>';
-    t10.forEach(function(a,i){
-      var clr=i<3?'#1e40af':i<7?'#3b82f6':'#93c5fd';
-      h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((a.pct/t10mx)*100).toFixed(1)+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div></div>';
+  // ── AI Growth + Additional Metrics + Top 10 ───────────
+  h+='<div class="g3">';
+  // AI Growth
+  if(DATA.aiGrowth&&DATA.aiGrowth.length>0){
+    var aiMax=Math.max.apply(null,DATA.aiGrowth.map(function(d){return d.c;}));
+    var aiLast=DATA.aiGrowth[DATA.aiGrowth.length-1].c;
+    var aiFirst=DATA.aiGrowth[0].c;
+    var growPct=((aiLast/aiFirst-1)*100).toFixed(0);
+    h+='<div class="card"><div class="card-hdr"><div><div class="card-title">AI Spend Growth &mdash; AWS</div><div class="card-sub">Generative AI workload costs</div></div><span class="card-badge" style="background:var(--aws-lt);color:var(--aws)">▲ '+growPct+'%</span></div>';
+    h+='<div class="mini-bars">';
+    DATA.aiGrowth.forEach(function(d,i){
+      var ht=Math.round((d.c/aiMax)*90);
+      var isLast=i===DATA.aiGrowth.length-1;
+      h+='<div class="mini-bar-wrap">';
+      h+='<div class="mini-bar-val" style="color:'+(isLast?'var(--orange)':'var(--sub)')+'">'+fK(d.c)+'</div>';
+      h+='<div class="mini-bar" style="height:'+ht+'px;background:'+(isLast?'linear-gradient(180deg,#f59e0b,#d97706)':'#fde68a')+'"></div>';
+      h+='<div class="mini-bar-lbl">'+d.m+'</div>';
+      h+='</div>';
     });
     h+='</div>';
+    h+='<p style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px;border-top:1px solid var(--border);padding-top:8px">'+growPct+'% cost increase across tracked AI workloads</p>';
+    h+='</div>';
+  } else {
+    h+='<div class="card"><div class="empty"><strong>📈</strong>No AI growth data in config.json</div></div>';
   }
+  // Additional Metrics
+  if(DATA.additional&&DATA.additional.length>0){
+    h+='<div class="card"><div class="card-hdr"><div class="card-title">Additional Metrics</div><div class="card-sub">Operational benchmarks</div></div>';
+    DATA.additional.forEach(function(r){
+      h+='<div class="irow"><span class="ikey">'+r.metric+'</span><div style="display:flex;gap:10px;align-items:center"><span style="font-size:10px;color:var(--muted)">'+r.may+'</span><span style="font-size:10px;color:var(--muted)">→</span><span class="ival" style="color:var(--azure)">'+r.nov+'</span></div></div>';
+    });
+    h+='</div>';
+  } else {
+    h+='<div class="card"><div class="empty"><strong>📊</strong>No additional metrics in config.json</div></div>';
+  }
+  // Top 10 — aggregate across selected range
+  var aggCostMap={};
+  selArr.forEach(function(idx2){
+    var t20=DATA.top20Data[idx2];
+    if(!t20||t20.length===0) return;
+    t20.forEach(function(sub){
+      if(!aggCostMap[sub.name]) aggCostMap[sub.name]=0;
+      aggCostMap[sub.name]+=sub.cost;
+    });
+  });
+  var aggMerged=Object.keys(aggCostMap).map(function(name){
+    return {name:name,cost:aggCostMap[name],pct:tC>0?parseFloat((aggCostMap[name]/aggAz*100).toFixed(1)):0};
+  }).sort(function(a,b){return b.cost-a.cost;});
+  if(aggMerged.length>0){
+    var t10=aggMerged.slice(0,10);
+    var t10mx=t10[0].pct;
+    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+rangeLabel+'</div></div>';
+    t10.forEach(function(a,i){
+      var clr=i<3?'#1e40af':i<7?'#3b82f6':'#93c5fd';
+      h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((t10mx>0?(a.pct/t10mx)*100:0).toFixed(1))+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div></div>';
+    });
+    h+='</div>';
+  } else {
+    h+='<div class="card"><div class="empty"><strong>📋</strong>No account data available.<br>Add a <code>top20</code> array to your monthly JSON files.</div></div>';
+  }
+  h+='</div>';
 
   return h;
 }
@@ -1521,8 +1584,8 @@ function renderCompareView(){
     h+='<th>#</th><th style="color:#d97706">'+mb+' &mdash; Subscription</th><th class="r" style="color:#d97706">Cost</th>';
     h+='</tr></thead><tbody>';
     for(var ri=0;ri<rows10;ri++){
-      var ra=t20a&&t20a[ri]?t20a[ri]:null;
-      var rb=t20b&&t20b[ri]?t20b[ri]:null;
+      var ra=t20a?t20a[ri]||null:null;
+      var rb=t20b?t20b[ri]||null:null;
       var clrA=ri<3?'#1d4ed8':ri<7?'#3b82f6':'#93c5fd';
       var clrB=ri<3?'#92400e':ri<7?'#b45309':'#d97706';
       h+='<tr>';
@@ -1530,15 +1593,19 @@ function renderCompareView(){
         h+='<td style="font-size:10px;font-weight:700;color:'+clrA+'">'+(ri+1)+'</td>';
         h+='<td style="font-size:11px">'+ra.name+'</td>';
         h+='<td class="m r" style="font-size:11px">'+f$(ra.cost)+'</td>';
+      } else if(!t20a&&ri===0){
+        h+='<td colspan="3" style="color:var(--muted);font-style:italic;font-size:11px;padding:10px 8px">No subscription data for '+ma+'</td>';
       } else {
-        h+='<td></td><td style="color:var(--muted);font-style:italic;font-size:11px">&mdash;</td><td></td>';
+        h+='<td colspan="3"></td>';
       }
       if(rb){
         h+='<td style="font-size:10px;font-weight:700;color:'+clrB+'">'+(ri+1)+'</td>';
         h+='<td style="font-size:11px">'+rb.name+'</td>';
         h+='<td class="m r" style="font-size:11px">'+f$(rb.cost)+'</td>';
+      } else if(!t20b&&ri===0){
+        h+='<td colspan="3" style="color:var(--muted);font-style:italic;font-size:11px;padding:10px 8px">No subscription data for '+mb+'</td>';
       } else {
-        h+='<td></td><td style="color:var(--muted);font-style:italic;font-size:11px">&mdash;</td><td></td>';
+        h+='<td colspan="3"></td>';
       }
       h+='</tr>';
     }
