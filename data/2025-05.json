@@ -1,0 +1,22 @@
+{
+  "month": "May 2025",
+  "azure": {
+    "cost": 23260.8,
+    "budget": 1850000
+  },
+  "aws": {
+    "cost": 90695.15,
+    "budget": 100000
+  },
+  "gcp": {
+    "cost": 0,
+    "budget": 65000
+  },
+  "top20": [
+    {
+      "name": "Digital Engineering Fabric Production",
+      "cost": 23260.8,
+      "pct": 100.0
+    }
+  ]
+}
