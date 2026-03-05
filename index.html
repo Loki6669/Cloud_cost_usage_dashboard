@@ -1521,8 +1521,8 @@ function renderCompareView(){
     h+='<th>#</th><th style="color:#d97706">'+mb+' &mdash; Subscription</th><th class="r" style="color:#d97706">Cost</th>';
     h+='</tr></thead><tbody>';
     for(var ri=0;ri<rows10;ri++){
-      var ra=t20a&&t20a[ri]?t20a[ri]:null;
-      var rb=t20b&&t20b[ri]?t20b[ri]:null;
+      var ra=t20a?t20a[ri]||null:null;
+      var rb=t20b?t20b[ri]||null:null;
       var clrA=ri<3?'#1d4ed8':ri<7?'#3b82f6':'#93c5fd';
       var clrB=ri<3?'#92400e':ri<7?'#b45309':'#d97706';
       h+='<tr>';
@@ -1530,15 +1530,19 @@ function renderCompareView(){
         h+='<td style="font-size:10px;font-weight:700;color:'+clrA+'">'+(ri+1)+'</td>';
         h+='<td style="font-size:11px">'+ra.name+'</td>';
         h+='<td class="m r" style="font-size:11px">'+f$(ra.cost)+'</td>';
+      } else if(!t20a&&ri===0){
+        h+='<td colspan="3" style="color:var(--muted);font-style:italic;font-size:11px;padding:10px 8px">No subscription data for '+ma+'</td>';
       } else {
-        h+='<td></td><td style="color:var(--muted);font-style:italic;font-size:11px">&mdash;</td><td></td>';
+        h+='<td colspan="3"></td>';
       }
       if(rb){
         h+='<td style="font-size:10px;font-weight:700;color:'+clrB+'">'+(ri+1)+'</td>';
         h+='<td style="font-size:11px">'+rb.name+'</td>';
         h+='<td class="m r" style="font-size:11px">'+f$(rb.cost)+'</td>';
+      } else if(!t20b&&ri===0){
+        h+='<td colspan="3" style="color:var(--muted);font-style:italic;font-size:11px;padding:10px 8px">No subscription data for '+mb+'</td>';
       } else {
-        h+='<td></td><td style="color:var(--muted);font-style:italic;font-size:11px">&mdash;</td><td></td>';
+        h+='<td colspan="3"></td>';
       }
       h+='</tr>';
     }
