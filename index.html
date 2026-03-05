@@ -240,6 +240,9 @@ tr.nodata-row td{color:var(--muted);font-style:italic;text-align:center}
 .cal-cell:hover{border-color:#94a3b8;color:var(--text);background:#f8fafc}
 .cal-cell.has-data{color:var(--text);border-color:#cbd5e1}
 .cal-cell.selected{background:#2563eb;color:#fff;border-color:#2563eb;box-shadow:0 0 0 3px #dbeafe}
+.cal-cell.in-range{background:#eff6ff;color:#2563eb;border-color:#bfdbfe}
+.cal-cell.range-start{background:#2563eb;color:#fff;border-color:#2563eb;box-shadow:0 0 0 3px #dbeafe}
+.cal-cell.range-end{background:#2563eb;color:#fff;border-color:#2563eb;box-shadow:0 0 0 3px #dbeafe}
 .cal-cell.no-data{opacity:.35;cursor:not-allowed}
 .cal-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.35);z-index:500;display:flex;align-items:center;justify-content:center}
 .cal-modal{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;width:300px;box-shadow:var(--sh2)}
@@ -297,13 +300,12 @@ tr.nodata-row td{color:var(--muted);font-style:italic;text-align:center}
 <!-- ║  TOOLBAR                                             ║ -->
 <!-- ╚══════════════════════════════════════════════════════╝ -->
 <div class="toolbar" id="toolbar" style="display:none">
-  <span class="tlabel">Months</span>
-  <div class="mpills" id="monthPills"></div>
+  <span class="tlabel">Period</span>
   <button class="cal-trigger-btn" id="calTriggerBtn" onclick="openCalModal()">
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     <span id="calBtnLabel">Pick Month</span>
   </button>
-  <span class="tip">&#9432; Select multiple months to view side-by-side</span>
+  <span class="tip" id="rangeTip"></span>
   <div class="tsep"></div>
   <span class="tlabel">Clouds</span>
   <div class="ctoggles" id="cloudToggles"></div>
@@ -321,12 +323,23 @@ tr.nodata-row td{color:var(--muted);font-style:italic;text-align:center}
   </div>
 </div>
 
-<!-- Calendar Modal -->
+<!-- Calendar Modal — Range Picker -->
 <div class="cal-modal-overlay" id="calModal" style="display:none" onclick="if(event.target===this)closeCalModal()">
-  <div class="cal-modal">
+  <div class="cal-modal" style="width:340px">
     <div class="cal-modal-hdr">
-      <span class="cal-modal-title">&#128197; Pick a Month</span>
+      <span class="cal-modal-title">&#128197; Select Date Range</span>
       <button class="cal-modal-close" onclick="closeCalModal()">&times;</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <div style="flex:1;padding:8px 10px;border-radius:6px;border:1.5px solid" id="rangeFromBox">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px">From</div>
+        <div style="font-size:13px;font-weight:700" id="rangeFromLabel">—</div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:16px;color:var(--muted)">→</div>
+      <div style="flex:1;padding:8px 10px;border-radius:6px;border:1.5px solid" id="rangeToBox">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px">To</div>
+        <div style="font-size:13px;font-weight:700" id="rangeToLabel">—</div>
+      </div>
     </div>
     <div class="cal-nav">
       <button class="cal-nav-btn" onclick="calChangeYear(-1)">&#8249; Prev</button>
@@ -334,8 +347,8 @@ tr.nodata-row td{color:var(--muted);font-style:italic;text-align:center}
       <button class="cal-nav-btn" onclick="calChangeYear(1)">Next &#8250;</button>
     </div>
     <div class="cal-grid" id="calGrid"></div>
-    <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:10px">Only months with data are selectable</p>
-    <button id="calApplyBtn" onclick="closeCalModal()" style="display:none;width:100%;margin-top:10px;padding:9px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">View Selected Months &#8594;</button>
+    <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:10px">Click a start month, then an end month</p>
+    <button id="calApplyBtn" onclick="applyRange()" style="display:none;width:100%;margin-top:10px;padding:9px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">Apply Range &#8594;</button>
   </div>
 </div>
 
@@ -431,6 +444,8 @@ var AZ_CLR='#2563eb', AWS_CLR='#d97706', GCP_CLR='#059669';
 var CMP_CLR=['#6366f1','#f59e0b','#10b981','#ec4899','#14b8a6','#f97316','#8b5cf6'];
 var CMP=[null,null];   // Compare view: [monthA_idx, monthB_idx]
 var CAL_YEAR=2025;     // Calendar modal: currently displayed year
+var RANGE_FROM=null;   // Range picker: from month index (global data index)
+var RANGE_TO=null;     // Range picker: to month index
 
 /* ═══════════════════════════════════════════════════
    4. FORMATTERS
@@ -453,8 +468,9 @@ function clamp(v,mn,mx){return Math.min(Math.max(v,mn),mx);}
    5. GLOBAL HANDLERS
 ═══════════════════════════════════════════════════ */
 window.togMonth=function(i){
-  if(SEL.has(i)){if(SEL.size>1)SEL.delete(i);}
-  else{SEL.add(i);}
+  // Used by chart dot clicks — set as single-month selection
+  RANGE_FROM=i;RANGE_TO=i;
+  applyRangeToSEL();
   buildToolbar();render();
 };
 window.togCloud=function(c){
@@ -465,11 +481,13 @@ window.setCmp=function(slot,idx){
   CMP[slot]=CMP[slot]===idx?null:idx;
   render();
 };
-// Calendar modal
+// Calendar range picker
+var RANGE_STEP='from'; // 'from' or 'to'
 window.openCalModal=function(){
   if(!DATA) return;
   var years=DATA.files.map(function(f){return parseInt(f.slice(0,4));});
   CAL_YEAR=Math.max.apply(null,years);
+  RANGE_STEP='from';
   renderCalGrid();
   document.getElementById('calModal').style.display='flex';
 };
@@ -480,48 +498,105 @@ window.calChangeYear=function(dir){
   CAL_YEAR+=dir;
   renderCalGrid();
 };
+window.calPickMonth=function(idx){
+  if(RANGE_STEP==='from'){
+    RANGE_FROM=idx;
+    RANGE_TO=null;
+    RANGE_STEP='to';
+  } else {
+    // Picking "to" — ensure range is ordered
+    if(idx<RANGE_FROM){
+      RANGE_TO=RANGE_FROM;
+      RANGE_FROM=idx;
+    } else {
+      RANGE_TO=idx;
+    }
+    RANGE_STEP='from';
+  }
+  renderCalGrid();
+};
+window.applyRange=function(){
+  if(RANGE_FROM===null) return;
+  if(RANGE_TO===null) RANGE_TO=RANGE_FROM;
+  applyRangeToSEL();
+  closeCalModal();
+  buildToolbar();render();
+};
+function applyRangeToSEL(){
+  SEL=new Set();
+  if(RANGE_FROM===null) return;
+  var lo=RANGE_FROM, hi=RANGE_TO!==null?RANGE_TO:RANGE_FROM;
+  for(var i=lo;i<=hi;i++){
+    if(DATA.azure.hasData[i]||DATA.aws.hasData[i]||DATA.gcp.hasData[i]) SEL.add(i);
+  }
+  if(SEL.size===0) SEL.add(lo); // fallback
+}
 function renderCalGrid(){
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   document.getElementById('calYearLabel').textContent=CAL_YEAR;
   var grid=document.getElementById('calGrid');
   grid.innerHTML='';
+  // Build a sorted list of all data indices for range logic
   months.forEach(function(mo,mi){
     var mm=String(mi+1).padStart(2,'0');
     var key=CAL_YEAR+'-'+mm;
     var idx=DATA.files.indexOf(key+'.json');
     var hasData=idx>=0&&(DATA.azure.hasData[idx]||DATA.aws.hasData[idx]||DATA.gcp.hasData[idx]);
-    var isSel=idx>=0&&SEL.has(idx);
+    var isStart=idx>=0&&RANGE_FROM===idx;
+    var isEnd=idx>=0&&RANGE_TO===idx;
+    var inRange=idx>=0&&RANGE_FROM!==null&&RANGE_TO!==null&&idx>=RANGE_FROM&&idx<=RANGE_TO;
     var btn=document.createElement('button');
-    btn.className='cal-cell'+(hasData?' has-data':'  no-data')+(isSel?' selected':'');
+    var cls='cal-cell';
+    if(hasData) cls+=' has-data';
+    else cls+=' no-data';
+    if(isStart) cls+=' range-start';
+    else if(isEnd) cls+=' range-end';
+    else if(inRange&&hasData) cls+=' in-range';
+    btn.className=cls;
     btn.textContent=mo;
     if(hasData){
       btn.title=DATA.months[idx];
-      btn.onclick=function(){togMonth(idx);renderCalGrid();};
+      btn.onclick=function(){calPickMonth(idx);};
     } else {
       btn.disabled=true;
       btn.title='No data for '+mo+' '+CAL_YEAR;
     }
     grid.appendChild(btn);
   });
-  // Update trigger button label
-  var btn2=document.getElementById('calTriggerBtn');
-  var lbl=document.getElementById('calBtnLabel');
-  if(SEL.size===1){
-    var si=[...SEL][0];
-    lbl.textContent=DATA.months[si];
-    btn2.classList.add('active');
-  } else if(SEL.size>1){
-    lbl.textContent=SEL.size+' months';
-    btn2.classList.add('active');
-  } else {
-    lbl.textContent='Pick Month';
-    btn2.classList.remove('active');
+  // Update From/To labels in the modal
+  var fromLabel=document.getElementById('rangeFromLabel');
+  var toLabel=document.getElementById('rangeToLabel');
+  var fromBox=document.getElementById('rangeFromBox');
+  var toBox=document.getElementById('rangeToBox');
+  if(fromLabel){
+    fromLabel.textContent=RANGE_FROM!==null?DATA.months[RANGE_FROM]:'—';
+    fromBox.style.borderColor=RANGE_FROM!==null?'#2563eb':'var(--border)';
+    fromBox.style.background=RANGE_FROM!==null?'#eff6ff':'transparent';
+  }
+  if(toLabel){
+    toLabel.textContent=RANGE_TO!==null?DATA.months[RANGE_TO]:'—';
+    toBox.style.borderColor=RANGE_TO!==null?'#2563eb':'var(--border)';
+    toBox.style.background=RANGE_TO!==null?'#eff6ff':'transparent';
+  }
+  // Highlight which step we're on
+  if(RANGE_STEP==='from'){
+    fromBox.style.borderColor='#6366f1';
+    fromBox.style.background='#f5f3ff';
+  }
+  if(RANGE_STEP==='to'&&RANGE_FROM!==null){
+    toBox.style.borderColor='#6366f1';
+    toBox.style.background='#f5f3ff';
   }
   // Show/hide Apply button
   var applyBtn=document.getElementById('calApplyBtn');
   if(applyBtn){
-    applyBtn.style.display=SEL.size>0?'block':'none';
-    applyBtn.textContent=SEL.size>1?'View '+SEL.size+' Selected Months \u2192':'View '+DATA.months[[...SEL][0]]+' \u2192';
+    var canApply=RANGE_FROM!==null;
+    applyBtn.style.display=canApply?'block':'none';
+    if(RANGE_FROM!==null&&RANGE_TO!==null&&RANGE_FROM!==RANGE_TO){
+      applyBtn.textContent='Apply Range: '+DATA.months[RANGE_FROM]+' \u2192 '+DATA.months[RANGE_TO];
+    } else if(RANGE_FROM!==null){
+      applyBtn.textContent='View '+DATA.months[RANGE_FROM]+' \u2192';
+    }
   }
 }
 window.setView=function(v,el){
@@ -536,17 +611,6 @@ window.setView=function(v,el){
 ═══════════════════════════════════════════════════ */
 function buildToolbar(){
   document.getElementById('navDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
-  var n=DATA.months.length;
-  // Month pills
-  var pillsH=DATA.months.map(function(m,i){
-    var sel=SEL.has(i);
-    var hasAny=DATA.azure.hasData[i]||DATA.aws.hasData[i]||DATA.gcp.hasData[i];
-    var cls='mpill'+(sel?(SEL.size===1?' sel1':' selm'):'')+(hasAny?'':' nodata');
-    var chk=sel?'&#10003;':'';
-    var title=hasAny?m:m+' (no data)';
-    return '<button class="'+cls+'" onclick="'+(hasAny?'togMonth('+i+')':'void(0)')+'" title="'+title+'"><span class="chk">'+chk+'</span>'+m+'</button>';
-  }).join('');
-  document.getElementById('monthPills').innerHTML=pillsH;
   // Cloud toggles
   var clouds=[
     {k:'AZ',lbl:'Azure',clr:AZ_CLR},
@@ -557,16 +621,30 @@ function buildToolbar(){
     var on=CL[c.k];
     return '<button class="ctog'+(on?'':' off')+'" onclick="togCloud(\''+c.k+'\')" style="border-color:'+(on?c.clr:'var(--border)')+'"><span class="cdot" style="background:'+c.clr+'"></span>'+c.lbl+'</button>';
   }).join('');
-  // Compare badge
+  // Badge
   var ns=SEL.size;
-  document.getElementById('cmpBadge').innerHTML=ns>1?'<div class="compare-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg> '+(VIEW==='overview'?'Viewing':'Comparing')+' '+ns+' months</div>':'';
+  document.getElementById('cmpBadge').innerHTML=ns>1?'<div class="compare-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg> '+ns+' months</div>':'';
   // Calendar button label
   var lbl=document.getElementById('calBtnLabel');
   var btn2=document.getElementById('calTriggerBtn');
   if(lbl&&btn2){
-    if(ns===1){lbl.textContent=DATA.months[[...SEL][0]];btn2.classList.add('active');}
-    else if(ns>1){lbl.textContent=ns+' months';btn2.classList.add('active');}
-    else{lbl.textContent='Pick Month';btn2.classList.remove('active');}
+    if(RANGE_FROM!==null&&RANGE_TO!==null&&RANGE_FROM!==RANGE_TO){
+      lbl.textContent=DATA.months[RANGE_FROM]+' → '+DATA.months[RANGE_TO];
+      btn2.classList.add('active');
+    } else if(ns===1){
+      lbl.textContent=DATA.months[[...SEL][0]];
+      btn2.classList.add('active');
+    } else {
+      lbl.textContent='Pick Month';
+      btn2.classList.remove('active');
+    }
+  }
+  // Range tip
+  var tip=document.getElementById('rangeTip');
+  if(tip){
+    if(ns>1) tip.textContent='Showing aggregated data for '+ns+' months';
+    else if(ns===1) tip.textContent='Showing '+DATA.months[[...SEL][0]];
+    else tip.textContent='';
   }
 }
 
@@ -877,81 +955,163 @@ function renderOverviewSingle(idx){
 }
 
 /* ═══════════════════════════════════════════════════
-   11. RENDER — OVERVIEW MULTI-MONTH
+   11. RENDER — OVERVIEW MULTI-MONTH (AGGREGATED)
 ═══════════════════════════════════════════════════ */
 function renderOverviewMulti(selArr){
   var h='';
+  var firstMo=DATA.months[selArr[0]];
+  var lastMo=DATA.months[selArr[selArr.length-1]];
+  var rangeLabel=firstMo+' → '+lastMo;
+  var nMonths=selArr.length;
+
+  // Compute aggregated totals across the range
+  var aggAz=0,aggAzBud=0,aggAw=0,aggAwBud=0,aggGc=0,aggGcBud=0;
+  var azHas=false,awHas=false,gcHas=false;
+  selArr.forEach(function(i){
+    if(CL.AZ&&DATA.azure.hasData[i]){aggAz+=DATA.azure.costs[i];aggAzBud+=DATA.azure.budgets[i];azHas=true;}
+    if(CL.AWS&&DATA.aws.hasData[i]){aggAw+=DATA.aws.costs[i];aggAwBud+=DATA.aws.budgets[i];awHas=true;}
+    if(CL.GCP&&DATA.gcp.hasData[i]){aggGc+=DATA.gcp.costs[i];aggGcBud+=DATA.gcp.budgets[i];gcHas=true;}
+  });
+  var tC=aggAz+aggAw+aggGc;
+  var tB=aggAzBud+aggAwBud+aggGcBud;
+  var tOver=tC>tB, tUtil=pctN(tC,tB);
+
   // Banner
   h+='<div class="cmp-banner" style="margin-bottom:20px"><div>';
-  h+='<div class="cmp-title">Multi-Month Overview</div>';
-  h+='<div class="cmp-months">'+selArr.map(function(i){return DATA.months[i];}).join(' &bull; ')+'</div>';
-  h+='</div><div class="cmp-chips">'+selArr.map(function(mi,ci){
-    var clr=CMP_CLR[ci%CMP_CLR.length];
-    return '<div class="cmp-chip" style="border-color:'+clr+'"><span style="width:8px;height:8px;background:'+clr+';border-radius:2px;display:inline-block"></span>'+DATA.months[mi]+'</div>';
-  }).join('')+'</div></div>';
+  h+='<div class="cmp-title">Aggregated Overview &mdash; '+nMonths+' months</div>';
+  h+='<div class="cmp-months">'+rangeLabel+'</div>';
+  h+='</div></div>';
 
-  // KPI section per selected month
-  selArr.forEach(function(idx,ci){
-    var clr=CMP_CLR[ci%CMP_CLR.length];
-    var rows=getCloudRows(idx);
-    var tC=rows.reduce(function(s,r){return s+r.c;},0);
-    var tB=rows.reduce(function(s,r){return s+r.b;},0);
-    var tOver=tC>tB, tUtil=pctN(tC,tB);
-    h+='<div style="border-left:3px solid '+clr+';padding-left:12px;margin-bottom:20px">';
-    h+='<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:'+clr+';margin-bottom:8px">'+DATA.months[idx]+'</div>';
-    h+='<div class="kpi-row">';
-    // Total
-    h+='<div class="kpi" style="--kc:'+(tOver?'var(--red)':'var(--green)')+'"><div class="kpi-lbl">Total Cloud Spend</div>';
-    h+='<div class="kpi-val">'+fK(tC)+'</div>';
-    h+='<div class="kpi-foot"><span class="kpi-bud">Budget '+fK(tB)+'</span>';
-    h+='<span class="delta '+(tOver?'bad':'good')+'">'+(tOver?'▲ Over':'▼ Under')+'</span></div>';
-    h+='<div class="kpi-bar"><div class="kpi-bar-fill" style="width:'+clamp(tUtil,0,100)+'%;background:'+(tOver?'var(--red)':'var(--green)')+'"></div></div></div>';
-    // Per-cloud
-    rows.forEach(function(r){
-      var over=r.c>r.b, util=pctN(r.c,r.b);
-      h+='<div class="kpi" style="--kc:'+r.clr+'"><div class="kpi-lbl"><span class="dot" style="background:'+r.clr+'"></span>'+r.n+'</div>';
-      if(!r.has){
-        h+='<div class="kpi-val" style="color:var(--muted);font-size:18px">No Data</div>';
-      } else {
-        h+='<div class="kpi-val" style="color:'+r.clr+'">'+fK(r.c)+'</div>';
-        h+='<div class="kpi-foot"><span class="kpi-bud">Budget '+fK(r.b)+' &middot; '+util+'%</span>';
-        h+='<span class="delta '+(over?'bad':'good')+'">'+(over?'Over':'Under')+'</span></div>';
-        h+='<div class="kpi-bar"><div class="kpi-bar-fill" style="width:'+clamp(util,0,100)+'%;background:'+r.clr+'"></div></div>';
-      }
-      h+='</div>';
-    });
-    h+='</div></div>';
+  // KPI Cards — single aggregated set
+  h+='<div class="kpi-row">';
+  var tClr=tOver?'var(--red)':'var(--green)';
+  h+='<div class="kpi" style="--kc:'+tClr+'">';
+  h+='<div class="kpi-lbl">Total Cloud Spend &middot; '+rangeLabel+'</div>';
+  h+='<div class="kpi-val">'+fK(tC)+'</div>';
+  h+='<div class="kpi-foot"><span class="kpi-bud">Budget '+fK(tB)+' ('+nMonths+' months)</span>';
+  h+='<span class="delta '+(tOver?'bad':'good')+'">'+(tOver?'▲ Over':'▼ Under')+'</span></div>';
+  h+='<div class="kpi-bar"><div class="kpi-bar-fill" style="width:'+clamp(tUtil,0,100)+'%;background:'+tClr+'"></div></div></div>';
+  // Per-cloud aggregated KPIs
+  var cloudAgg=[];
+  if(CL.AZ) cloudAgg.push({n:'Azure',clr:AZ_CLR,c:aggAz,b:aggAzBud,has:azHas});
+  if(CL.AWS) cloudAgg.push({n:'AWS',clr:AWS_CLR,c:aggAw,b:aggAwBud,has:awHas});
+  if(CL.GCP) cloudAgg.push({n:'GCP',clr:GCP_CLR,c:aggGc,b:aggGcBud,has:gcHas});
+  cloudAgg.forEach(function(r){
+    var over=r.c>r.b, util=pctN(r.c,r.b);
+    h+='<div class="kpi" style="--kc:'+r.clr+'"><div class="kpi-lbl"><span class="dot" style="background:'+r.clr+'"></span>'+r.n+'</div>';
+    if(!r.has){
+      h+='<div class="kpi-val" style="color:var(--muted);font-size:18px">No Data</div>';
+    } else {
+      h+='<div class="kpi-val" style="color:'+r.clr+'">'+fK(r.c)+'</div>';
+      h+='<div class="kpi-foot"><span class="kpi-bud">Budget '+fK(r.b)+' &middot; '+util+'%</span>';
+      h+='<span class="delta '+(over?'bad':'good')+'">'+(over?'Over':'Under')+'</span></div>';
+      h+='<div class="kpi-bar"><div class="kpi-bar-fill" style="width:'+clamp(util,0,100)+'%;background:'+r.clr+'"></div></div>';
+    }
+    h+='</div>';
   });
+  h+='</div>';
+
+  // Spend vs Budget table — aggregated
+  h+='<div class="g2 mb">';
+  h+='<div class="card"><div class="card-hdr"><div><div class="card-title">Aggregated Spend vs Budget</div><div class="card-sub">'+rangeLabel+' &mdash; '+nMonths+' months combined</div></div></div>';
+  h+='<div class="tscroll"><table><thead><tr><th>Cloud</th><th class="r">Total Spend</th><th class="r">Total Budget</th><th class="r">Variance</th><th class="r">Utilization</th></tr></thead><tbody>';
+  cloudAgg.forEach(function(r){
+    if(!r.has){
+      h+='<tr><td class="b"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+r.clr+';margin-right:8px;vertical-align:middle"></span>'+r.n+'</td><td colspan="4" style="color:var(--muted);font-style:italic;text-align:center">No data</td></tr>';
+      return;
+    }
+    var over=r.c>r.b, util=pctN(r.c,r.b);
+    h+='<tr><td class="b"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+r.clr+';margin-right:8px;vertical-align:middle"></span>'+r.n+'</td>';
+    h+='<td class="m r">'+f$(r.c)+'</td><td class="m r">'+f$(r.b)+'</td>';
+    h+='<td class="m r '+vSign(r.c,r.b)+'">'+vStr(r.c,r.b)+'</td>';
+    h+='<td class="r"><div class="util-cell"><div class="util-bar"><div class="util-fill" style="width:'+clamp(util,0,100)+'%;background:'+r.clr+'"></div></div><span class="mono" style="font-size:11px;color:'+(over?'var(--red)':'var(--green)')+'">'+fPct(r.c,r.b)+'</span></div></td></tr>';
+  });
+  h+='<tr class="tot"><td>Total</td><td class="m r">'+f$(tC)+'</td><td class="m r">'+f$(tB)+'</td>';
+  h+='<td class="m r '+vSign(tC,tB)+'">'+vStr(tC,tB)+'</td>';
+  h+='<td class="r"><div class="util-cell"><div class="util-bar"><div class="util-fill" style="width:'+clamp(tUtil,0,100)+'%;background:'+(tOver?'var(--red)':'var(--green)')+'"></div></div><span class="mono" style="font-size:11px">'+fPct(tC,tB)+'</span></div></td></tr>';
+  h+='</tbody></table></div></div>';
 
   // Trend chart
   var series=[];
   if(CL.AZ) series.push({n:'Azure',clr:AZ_CLR,costs:DATA.azure.costs,budgets:DATA.azure.budgets,hasData:DATA.azure.hasData});
   if(CL.AWS) series.push({n:'AWS',clr:AWS_CLR,costs:DATA.aws.costs,budgets:DATA.aws.budgets,hasData:DATA.aws.hasData});
   if(CL.GCP) series.push({n:'GCP',clr:GCP_CLR,costs:DATA.gcp.costs,budgets:DATA.gcp.budgets,hasData:DATA.gcp.hasData});
-  h+='<div class="card mb"><div class="card-hdr"><div><div class="card-title">Spend Trend</div>';
-  h+='<div class="card-sub">Selected months highlighted &bull; click dots to toggle</div></div></div>';
+  h+='<div class="card"><div class="card-hdr"><div><div class="card-title">Spend Trend</div>';
+  h+='<div class="card-sub">Selected range highlighted &bull; dashed = budget</div></div></div>';
   h+='<div class="chart-wrap">'+svgLine(series,DATA.months,SEL)+'</div>';
   h+='<div class="chart-legend">'+series.map(function(s){return '<span class="leg-item"><span class="leg-dot" style="background:'+s.clr+'"></span>'+s.n+'</span>';}).join('')+'<span class="leg-item"><span class="leg-dashed" style="border-color:#94a3b8"></span>Budget</span></div></div>';
+  h+='</div>';
 
-  // Spend comparison table
-  var cloudDefs=[];
-  if(CL.AZ) cloudDefs.push({n:'Azure',clr:AZ_CLR,costs:DATA.azure.costs,has:DATA.azure.hasData,budgets:DATA.azure.budgets});
-  if(CL.AWS) cloudDefs.push({n:'AWS',clr:AWS_CLR,costs:DATA.aws.costs,has:DATA.aws.hasData,budgets:DATA.aws.budgets});
-  if(CL.GCP) cloudDefs.push({n:'GCP',clr:GCP_CLR,costs:DATA.gcp.costs,has:DATA.gcp.hasData,budgets:DATA.gcp.budgets});
-  h+='<div class="card mb"><div class="card-hdr"><div class="card-title">Spend vs Budget &mdash; Selected Months</div></div>';
-  h+='<div class="tscroll"><table><thead><tr><th>Cloud</th>';
-  selArr.forEach(function(mi){h+='<th class="r">'+DATA.months[mi]+'</th>';});
-  h+='</tr></thead><tbody>';
-  cloudDefs.forEach(function(r){
+  // Cloud share donut-style breakdown
+  h+='<div class="g2e">';
+  // Aggregated cloud share
+  h+='<div class="card"><div class="card-hdr"><div class="card-title">Cloud Share of Spend</div><div class="card-sub">'+rangeLabel+'</div></div>';
+  h+='<div class="tscroll"><table><thead><tr><th>Cloud</th><th class="r">Spend</th><th class="r">Share</th></tr></thead><tbody>';
+  cloudAgg.forEach(function(r){
+    if(!r.has) return;
     h+='<tr><td class="b"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+r.clr+';margin-right:8px;vertical-align:middle"></span>'+r.n+'</td>';
-    selArr.forEach(function(mi){
-      h+=r.has[mi]?'<td class="m r">'+f$(r.costs[mi])+'</td>':'<td style="color:var(--muted);font-style:italic;text-align:right;font-size:11px">No data</td>';
-    });
-    h+='</tr>';
+    h+='<td class="m r">'+f$(r.c)+'</td>';
+    h+='<td class="r"><div class="util-cell"><div class="util-bar"><div class="util-fill" style="width:'+fPct(r.c,tC)+';background:'+r.clr+'"></div></div><span class="mono" style="font-size:11px">'+fPct(r.c,tC)+'</span></div></td></tr>';
   });
-  h+='<tr class="tot"><td>Total</td>';
-  selArr.forEach(function(mi){h+='<td class="m r">'+f$(getTotal(mi))+'</td>';});
-  h+='</tr></tbody></table></div></div>';
+  h+='<tr class="tot"><td>Total</td><td class="m r">'+f$(tC)+'</td><td class="mono r" style="font-size:11px">100.0%</td></tr>';
+  h+='</tbody></table></div></div>';
+
+  // MCA
+  if(DATA.mca&&DATA.mca.total>0){
+    var mp=DATA.mca.current/DATA.mca.total*100;
+    h+='<div class="card"><div class="card-hdr"><div><div class="card-title">Azure MCA Commitment</div><div class="card-sub">Microsoft Customer Agreement progress</div></div></div>';
+    h+='<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sub);margin-bottom:6px"><span>Consumed '+mp.toFixed(1)+'%</span><span>Remaining: <strong style="color:var(--green)">'+fK(DATA.mca.balance)+'</strong></span></div>';
+    h+='<div class="prog"><div class="prog-fill" style="width:'+clamp(mp,0,100)+'%;background:linear-gradient(90deg,#3b82f6,#6366f1)"></div></div></div>';
+    h+='<div class="irow"><span class="ikey">Total Commitment</span><span class="ival">'+fK(DATA.mca.total)+'</span></div>';
+    h+='<div class="irow"><span class="ikey">Amount Consumed</span><span class="ival">~'+fK(DATA.mca.current)+'</span></div>';
+    h+='<div class="irow"><span class="ikey">Remaining Balance</span><span class="ival" style="color:var(--green)">'+fK(DATA.mca.balance)+'</span></div>';
+    if(DATA.mca.note) h+='<p style="font-size:10px;color:var(--muted);margin-top:10px;font-style:italic;line-height:1.5">'+DATA.mca.note+'</p>';
+    h+='</div>';
+  }
+  h+='</div>';
+
+  // Monthly breakdown table within range
+  h+='<div class="card mb"><div class="card-hdr"><div class="card-title">Monthly Breakdown</div><div class="card-sub">Individual months within selected range</div></div>';
+  h+='<div class="tscroll"><table><thead><tr><th>Month</th>';
+  cloudAgg.forEach(function(r){h+='<th class="r" style="color:'+r.clr+'">'+r.n+'</th>';});
+  h+='<th class="r">Total</th></tr></thead><tbody>';
+  selArr.forEach(function(mi){
+    var rt=0;
+    h+='<tr><td class="b">'+DATA.months[mi]+'</td>';
+    cloudAgg.forEach(function(r,ci){
+      var dk=['azure','aws','gcp'];
+      var key=CL.AZ&&r.n==='Azure'?'azure':CL.AWS&&r.n==='AWS'?'aws':'gcp';
+      var val=DATA[key].hasData[mi]?DATA[key].costs[mi]:0;
+      rt+=val;
+      h+=DATA[key].hasData[mi]?'<td class="m r">'+fK(val)+'</td>':'<td style="color:var(--muted);font-style:italic;text-align:right;font-size:11px">—</td>';
+    });
+    h+='<td class="m r b">'+fK(rt)+'</td></tr>';
+  });
+  h+='<tr class="tot"><td>Total ('+nMonths+' months)</td>';
+  cloudAgg.forEach(function(r){h+='<td class="m r">'+fK(r.c)+'</td>';});
+  h+='<td class="m r">'+fK(tC)+'</td></tr>';
+  h+='</tbody></table></div></div>';
+
+  // Top 10 from latest month in range that has top20
+  var latestTop20=null,latestTop20Mo=null;
+  for(var ti=selArr.length-1;ti>=0;ti--){
+    if(DATA.top20Data[selArr[ti]]&&DATA.top20Data[selArr[ti]].length>0){
+      latestTop20=DATA.top20Data[selArr[ti]];
+      latestTop20Mo=DATA.months[selArr[ti]];
+      break;
+    }
+  }
+  if(latestTop20){
+    var t10=latestTop20.slice(0,10);
+    var t10mx=t10[0].pct;
+    h+='<div class="card"><div class="card-hdr"><div class="card-title">Top 10 Accounts</div><div class="card-sub">Azure subscriptions &middot; '+latestTop20Mo+'</div></div>';
+    t10.forEach(function(a,i){
+      var clr=i<3?'#1e40af':i<7?'#3b82f6':'#93c5fd';
+      h+='<div class="hbar"><div class="hbar-rank">'+(i+1)+'</div><div class="hbar-name" title="'+a.name+'">'+a.name+'</div><div class="hbar-track"><div class="hbar-fill" style="width:'+((a.pct/t10mx)*100).toFixed(1)+'%;background:'+clr+'"></div></div><div class="hbar-pct">'+a.pct+'%</div></div>';
+    });
+    h+='</div>';
+  }
+
   return h;
 }
 
@@ -1385,6 +1545,8 @@ async function init(){
       if(DATA.azure.hasData[i]||DATA.aws.hasData[i]||DATA.gcp.hasData[i]){lastWithData=i;break;}
     }
     SEL=new Set([lastWithData]);
+    RANGE_FROM=lastWithData;
+    RANGE_TO=lastWithData;
     // Set calendar year to the year of latest data
     var latestKey=DATA.files[lastWithData]||'';
     CAL_YEAR=parseInt(latestKey.slice(0,4))||new Date().getFullYear();
