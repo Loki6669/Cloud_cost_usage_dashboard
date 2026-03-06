@@ -1,7 +1,7 @@
 {
   "month": "Dec 2025",
   "azure": {
-    "cost": 1723484.88,
+    "cost": 1713896.84,
     "budget": 1850000
   },
   "aws": {
@@ -16,7 +16,7 @@
     {
       "name": "Digital Engineering Data Services Production",
       "cost": 284790.53,
-      "pct": 16.5
+      "pct": 16.6
     },
     {
       "name": "Digital Engineering CRM Personalization Production",
@@ -26,7 +26,7 @@
     {
       "name": "Digital Engineering Booking Production",
       "cost": 102360.62,
-      "pct": 5.9
+      "pct": 6.0
     },
     {
       "name": "Digital Engineering CIG Data Production",
@@ -51,7 +51,7 @@
     {
       "name": "Microsoft Azure Enterprise",
       "cost": 62643.84,
-      "pct": 3.6
+      "pct": 3.7
     },
     {
       "name": "Digital Engineering Data Services Development",
@@ -71,7 +71,7 @@
     {
       "name": "Digital Engineering Guest Services Development",
       "cost": 49027.79,
-      "pct": 2.8
+      "pct": 2.9
     },
     {
       "name": "Digital Engineering Payment Development",
@@ -111,7 +111,7 @@
     {
       "name": "Digital Engineering Fabric Production",
       "cost": 23256.89,
-      "pct": 1.3
+      "pct": 1.4
     }
   ]
 }

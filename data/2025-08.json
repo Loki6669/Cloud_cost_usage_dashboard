@@ -1,7 +1,7 @@
 {
   "month": "Aug 2025",
   "azure": {
-    "cost": 1624033.53,
+    "cost": 1571750.63,
     "budget": 1500000
   },
   "aws": {
@@ -16,62 +16,57 @@
     {
       "name": "Digital Engineering Data Services Production",
       "cost": 222011.9,
-      "pct": 13.7
+      "pct": 14.1
     },
     {
       "name": "Digital Engineering CRM Personalization Production",
       "cost": 135523.82,
-      "pct": 8.3
+      "pct": 8.6
     },
     {
       "name": "Digital Engineering Booking Production",
       "cost": 97945.61,
-      "pct": 6.0
+      "pct": 6.2
     },
     {
       "name": "Digital Engineering CIG Data Production",
       "cost": 75325.6,
-      "pct": 4.6
+      "pct": 4.8
     },
     {
       "name": "Information Technology Shared Services",
       "cost": 70000.8,
-      "pct": 4.3
+      "pct": 4.5
     },
     {
       "name": "Digital Engineering CIG Data Development",
       "cost": 67452.08,
-      "pct": 4.2
+      "pct": 4.3
     },
     {
       "name": "Microsoft Azure Enterprise",
       "cost": 63172.62,
-      "pct": 3.9
+      "pct": 4.0
     },
     {
       "name": "Automation Services",
       "cost": 54914.01,
-      "pct": 3.4
-    },
-    {
-      "name": "Digital Engineering Marketplace Purchase Development",
-      "cost": 52282.9,
-      "pct": 3.2
+      "pct": 3.5
     },
     {
       "name": "Digital Engineering Payment Production",
       "cost": 49517.93,
-      "pct": 3.0
+      "pct": 3.2
     },
     {
       "name": "Digital Engineering CIG Loyalty Production",
       "cost": 48574.74,
-      "pct": 3.0
+      "pct": 3.1
     },
     {
       "name": "Digital Engineering Data Services Development",
       "cost": 42766.48,
-      "pct": 2.6
+      "pct": 2.7
     },
     {
       "name": "Digital Engineering Payment Development",
@@ -81,12 +76,12 @@
     {
       "name": "Digital Engineering Booking Development",
       "cost": 34483.55,
-      "pct": 2.1
+      "pct": 2.2
     },
     {
       "name": "Digital Engineering Commit Purchase Production",
       "cost": 27777.77,
-      "pct": 1.7
+      "pct": 1.8
     },
     {
       "name": "Digital Engineering Guest Services Development",
@@ -101,16 +96,21 @@
     {
       "name": "Digital Engineering Shared Services",
       "cost": 25092.14,
-      "pct": 1.5
+      "pct": 1.6
     },
     {
       "name": "Digital Engineering Customer Production",
       "cost": 25037.81,
-      "pct": 1.5
+      "pct": 1.6
     },
     {
       "name": "Digital Engineering Fabric Production",
       "cost": 23258.9,
+      "pct": 1.5
+    },
+    {
+      "name": "Digital Engineering Product Information Management Production",
+      "cost": 21958.81,
       "pct": 1.4
     }
   ]
