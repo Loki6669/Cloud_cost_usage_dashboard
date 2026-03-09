@@ -1,0 +1,44 @@
+Project name,Project ID,Project number,List cost ($),Negotiated savings ($),Savings programs ($),Other savings ($),Unrounded subtotal ($),Subtotal ($),Percent change in subtotal compared to previous period
+MCORE Prod,mgm-resorts-app,680758060118,7755.19,0.00,0.00,-15.47,7739.725259,7739.73,36%
+DE Hub,mgm-gcp-hub-2395,80706764470,5637.70,0.00,0.00,0.00,5637.703235,5637.70,9%
+DE Host Prod,mgm-gcp-host-prod-99ba,554450694446,5330.66,0.00,0.00,-12.98,5317.684919,5317.68,53%
+[Charges not specific to a project],,,2839.15,-0.00,0.00,-100.00,2739.146063,2739.15,-1%
+DE Apigee Prod,mgm-gcp-apigee-prod-904e,718648447782,2146.35,0.00,0.00,0.00,2146.354142,2146.35,11%
+MCORE Dev,mgm-resorts-dev,272887929731,1564.04,0.00,0.00,-7.68,1556.357617,1556.36,-18%
+enterpriseai-leo,enterpriseai-leo-s-8bc0,985015804108,1533.70,0.00,0.00,0.00,1533.697945,1533.70,0%
+BFF Inference Hub,bff-inference-hub,75407949928,1347.02,0.00,0.00,0.00,1347.018721,1347.02,0%
+Enterprise SEO Tools,enterprise-seo-tools,895416359498,1196.54,0.00,0.00,-9.49,1187.041157,1187.04,16%
+Security Services Production,security-services-production,99914182183,996.86,0.00,0.00,-4.33,992.532412,992.53,6%
+enterpriseai-ccai,enterpriseai-ccai-s-7458,180803351998,890.52,0.00,0.00,0.00,890.515797,890.52,-2%
+DE Host Dev,mgm-gcp-host-dev-2ff2,104018523268,774.13,0.00,0.00,-2.16,771.970088,771.97,69%
+BFF Services Prod,bff-services-prod,600045219273,707.09,0.00,0.00,-8.00,699.090819,699.09,8%
+platform-poc-rafay,platform-poc-rafay-d094,911401398323,535.43,0.00,0.00,-33.22,502.211051,502.21,-66%
+BFF Services QA3,bff-services-qa3,225447046441,503.99,0.00,0.00,-7.38,496.612443,496.61,10%
+BFF Services Dev,bff-services-dev,647180751119,500.96,0.00,0.00,-7.48,493.483154,493.48,8%
+BFF Services QA4,bff-services-qa4,143291586451,492.58,0.00,0.00,-7.41,485.167602,485.17,9%
+BFF Services QA2,bff-services-qa2,164182675724,492.57,0.00,0.00,-7.40,485.167037,485.17,10%
+BFF Services Preprod,bff-services-preprod,472432908944,491.99,0.00,0.00,-7.38,484.612413,484.61,9%
+DE Host Payments Prod,mgm-gcp-host-pay-prod-78b6,845227945069,482.47,0.00,0.00,-8.65,473.818918,473.82,72%
+Conversational Tech Prod,mgm-convotech-core-prod,1009841319402,247.30,0.00,0.00,-4.49,242.814540,242.81,383%
+Conversational Tech Dev,mgm-convotech-core-dev,338849659383,148.45,0.00,0.00,-4.80,143.652766,143.65,5%
+Gen Media Dev,gen-media-dev-9360,1008548735853,104.53,0.00,0.00,-0.34,104.192841,104.19,58%
+DE Apigee Dev,mgm-gcp-apigee-dev-38ed,238307586088,102.48,0.00,0.00,0.00,102.481280,102.48,12%
+BFF AI Sandbox,bff-ai-sandbox,98976703604,89.62,0.00,0.00,0.00,89.622338,89.62,5%
+DE Sandbox,mgmri-de-sandbox-3993,441403335427,80.58,0.00,0.00,0.00,80.583259,80.58,102%
+Conversational Tech QA,mgm-convotech-core-qa,841238083448,48.95,0.00,0.00,-4.34,44.608359,44.61,-70%
+BFF Services CICD,bff-services-cicd,902287343257,33.97,0.00,0.00,0.00,33.966374,33.97,-31%
+Conversational Tech Preprod,mgm-convotech-core-preprod,790405136716,34.23,0.00,0.00,-4.34,29.886551,29.89,38%
+Anthos PoC,anthospoc-386521,735782616899,15.07,0.00,0.00,-1.88,13.190880,13.19,New
+DE Apigee Payments Prod,mgm-gcp-apigee-pay-prod-220c,205479714327,7.14,0.00,0.00,0.00,7.142586,7.14,46%
+MGM Agentic Platform,mgmresorts-agentic-platform,37314578321,3.84,0.00,0.00,0.00,3.842805,3.84,3%
+DE Shared Services Prod,de-shared-services-prod,213040699259,0.90,0.00,0.00,0.00,0.901366,0.90,8%
+Kiosk Core Prod,kiosk-core-prod,122321971951,0.85,0.00,0.00,0.00,0.852089,0.85,-20%
+Chat Services Prod,chat-services-prod,1044787944309,0.61,0.00,0.00,0.00,0.607469,0.61,9%
+Security Services Development,security-services-development,421577810376,0.26,0.00,0.00,0.00,0.257228,0.26,-90%
+Kiosk Core Dev,kiosk-core-dev,110845169822,0.16,0.00,0.00,0.00,0.159817,0.16,-11%
+DE Shared Services Development,de-shared-services-development,1002760527927,0.02,0.00,0.00,0.00,0.017994,0.02,0%
+Chat Services Dev,chat-services-dev,142223184614,0.01,0.00,0.00,0.00,0.014224,0.01,0%
+DE IAM,mgm-gcp-iam-524c,714723668286,0.00,0.00,0.00,0.00,0.000867,0.00,0%
+,,,,,,Subtotal,36878.706425,36878.71
+,,,,,,Tax,0.000000,0.00
+,,,,,,Total,36878.706425,36878.71

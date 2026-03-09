@@ -1,0 +1,43 @@
+Project name,Project ID,Project number,Cost ($),Savings programs ($),Other savings ($),Unrounded subtotal ($),Subtotal ($),Percent change in subtotal compared to previous period
+MCORE Prod,mgm-resorts-app,680758060118,7203.22,0.00,-1359.51,5843.712313,5843.71,23%
+DE Hub,mgm-gcp-hub-2395,80706764470,5588.88,0.00,-283.56,5305.321355,5305.32,-2%
+DE Host Prod,mgm-gcp-host-prod-99ba,554450694446,4967.95,0.00,-1469.87,3498.084525,3498.08,93%
+[Charges not specific to a project],,,2876.35,0.00,-100.00,2776.351173,2776.35,-10%
+MCORE Dev,mgm-resorts-dev,272887929731,2035.60,0.00,-40.31,1995.288073,1995.29,-37%
+DE Apigee Prod,mgm-gcp-apigee-prod-904e,718648447782,1970.40,0.00,0.00,1970.397752,1970.40,-8%
+enterpriseai-leo,enterpriseai-leo-s-8bc0,985015804108,1582.67,0.00,0.00,1582.672699,1582.67,0%
+platform-poc-rafay,platform-poc-rafay-d094,911401398323,1675.47,0.00,-133.82,1541.648688,1541.65,-12%
+BFF Inference Hub,bff-inference-hub,75407949928,1389.99,0.00,-0.00,1389.984929,1389.98,0%
+Enterprise SEO Tools,enterprise-seo-tools,895416359498,1063.28,0.00,-6.17,1057.109207,1057.11,-1%
+Security Services Production,security-services-production,99914182183,1020.70,0.00,-53.58,967.118826,967.12,-3%
+enterpriseai-ccai,enterpriseai-ccai-s-7458,180803351998,941.89,0.00,0.00,941.891006,941.89,14%
+BFF Services Prod,bff-services-prod,600045219273,703.68,0.00,-36.64,667.035241,667.04,10%
+BFF Services Dev,bff-services-dev,647180751119,503.17,0.00,-36.63,466.545048,466.55,-2%
+BFF Services QA3,bff-services-qa3,225447046441,500.66,0.00,-36.56,464.104138,464.10,-15%
+DE Host Dev,mgm-gcp-host-dev-2ff2,104018523268,780.90,0.00,-321.81,459.098917,459.10,336%
+BFF Services Preprod,bff-services-preprod,472432908944,491.66,0.00,-36.19,455.471567,455.47,-15%
+BFF Services QA4,bff-services-qa4,143291586451,491.44,0.00,-36.28,455.158168,455.16,-15%
+BFF Services QA2,bff-services-qa2,164182675724,488.73,0.00,-36.25,452.481993,452.48,-16%
+DE Host Payments Prod,mgm-gcp-host-pay-prod-78b6,845227945069,446.44,0.00,-167.80,278.641415,278.64,218%
+TDD Platform Development,tdd-platform-dev-6029,507615329048,226.04,0.00,-52.33,173.706449,173.71,-23%
+Conversational Tech QA,mgm-convotech-core-qa,841238083448,151.20,0.00,-2.35,148.846784,148.85,New
+Conversational Tech Dev,mgm-convotech-core-dev,338849659383,158.36,0.00,-10.69,147.669351,147.67,157%
+DE Apigee Dev,mgm-gcp-apigee-dev-38ed,238307586088,91.54,0.00,0.00,91.537612,91.54,-12%
+BFF AI Sandbox,bff-ai-sandbox,98976703604,87.41,0.00,0.00,87.409231,87.41,8%
+Gen Media Dev,gen-media-dev-9360,1008548735853,66.14,0.00,0.00,66.138093,66.14,New
+BFF Services CICD,bff-services-cicd,902287343257,65.12,0.00,0.00,65.116423,65.12,-28%
+Conversational Tech Prod,mgm-convotech-core-prod,1009841319402,52.53,0.00,-2.24,50.291665,50.29,New
+DE Sandbox,mgmri-de-sandbox-3993,441403335427,43.06,0.00,-0.04,43.016459,43.02,-97%
+Conversational Tech Preprod,mgm-convotech-core-preprod,790405136716,23.92,0.00,-2.32,21.603861,21.60,New
+DE Apigee Payments Prod,mgm-gcp-apigee-pay-prod-220c,205479714327,4.99,0.00,0.00,4.987547,4.99,-33%
+MGM Agentic Platform,mgmresorts-agentic-platform,37314578321,3.85,0.00,0.00,3.846790,3.85,-3%
+Security Services Development,security-services-development,421577810376,2.70,0.00,0.00,2.704538,2.70,-38%
+Kiosk Core Prod,kiosk-core-prod,122321971951,1.09,0.00,-0.00,1.093927,1.09,1%
+DE Shared Services Prod,de-shared-services-prod,213040699259,0.84,0.00,0.00,0.840716,0.84,5%
+Chat Services Prod,chat-services-prod,1044787944309,0.58,0.00,0.00,0.576428,0.58,16%
+Kiosk Core Dev,kiosk-core-dev,110845169822,0.19,0.00,-0.00,0.190137,0.19,0%
+DE Shared Services Development,de-shared-services-development,1002760527927,0.02,0.00,0.00,0.017474,0.02,0%
+Chat Services Dev,chat-services-dev,142223184614,0.01,0.00,0.00,0.014333,0.01,0%
+,,,,,Subtotal,33477.724851,33477.72
+,,,,,Tax,0.000000,0.00
+,,,,,Total,33477.724851,33477.72
