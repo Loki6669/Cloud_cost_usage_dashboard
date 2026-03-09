@@ -891,13 +891,17 @@ function renderOverviewSingle(idx){
 
   // ── YTD + MCA ─────────────────────────────────
   h+='<div class="g2e">';
-  // YTD
-  var ytdIdxs=DATA.months.map(function(m,i){return{m:m,i:i};}).filter(function(x){return x.m.indexOf('2026')!==-1;}).map(function(x){return x.i;});
-  var ytdRows=rows.map(function(r){return{n:r.n,clr:r.clr,ytd:ytdIdxs.reduce(function(s,i){return s+(r.costs[i]||0);},0)};});
+  // YTD — Jan 2026 to present only
+  var ytdStart=DATA.months.findIndex(function(m){return m==='Jan 2026';});
+  var ytdIdxs=ytdStart>=0?DATA.months.map(function(_,i){return i;}).filter(function(i){return i>=ytdStart;}):[];
+  var ytdRows=[
+    {n:'Azure',clr:AZ_CLR,ytd:ytdIdxs.reduce(function(s,i){return s+(DATA.azure.costs[i]||0);},0)},
+    {n:'AWS',clr:AWS_CLR,ytd:ytdIdxs.reduce(function(s,i){return s+(DATA.aws.costs[i]||0);},0)},
+    {n:'GCP',clr:GCP_CLR,ytd:ytdIdxs.reduce(function(s,i){return s+(DATA.gcp.costs[i]||0);},0)}
+  ];
   var ytdTotal=ytdRows.reduce(function(s,r){return s+r.ytd;},0);
-  var ytdFirst=ytdIdxs.length?DATA.months[ytdIdxs[0]]:'2026';
-  var ytdLast=ytdIdxs.length?DATA.months[ytdIdxs[ytdIdxs.length-1]]:'2026';
-  h+='<div class="card"><div class="card-hdr"><div class="card-title">Year-to-Date Spend</div><div class="card-sub">'+ytdFirst+' &rarr; '+ytdLast+'</div></div>';
+  var ytdLast=ytdIdxs.length?DATA.months[ytdIdxs[ytdIdxs.length-1]]:'Present';
+  h+='<div class="card"><div class="card-hdr"><div class="card-title">Year-to-Date Spend</div><div class="card-sub">Jan 2026 &rarr; '+ytdLast+'</div></div>';
   h+='<div class="tscroll"><table><thead><tr><th>Cloud</th><th class="r">YTD Cost</th><th class="r">Share of Total</th></tr></thead><tbody>';
   ytdRows.forEach(function(r){
     h+='<tr><td class="b"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+r.clr+';margin-right:8px;vertical-align:middle"></span>'+r.n+'</td>';
