@@ -1,0 +1,43 @@
+Project name,Project ID,Project number,List cost ($),Negotiated savings ($),Savings programs ($),Other savings ($),Unrounded subtotal ($),Subtotal ($),Percent change in subtotal compared to previous period
+MCORE Prod,mgm-resorts-app,680758060118,9070.41,0.00,0.00,-15.97,9054.448866,9054.45,14%
+DE Hub,mgm-gcp-hub-2395,80706764470,5703.72,0.00,0.00,0.00,5703.718800,5703.72,-2%
+DE Host Prod,mgm-gcp-host-prod-99ba,554450694446,5402.80,0.00,0.00,-13.38,5389.415838,5389.42,-1%
+[Charges not specific to a project],,,3032.47,-0.00,0.00,-100.00,2932.470014,2932.47,4%
+DE Apigee Prod,mgm-gcp-apigee-prod-904e,718648447782,2129.27,0.00,0.00,0.00,2129.270563,2129.27,-3%
+MCORE Dev,mgm-resorts-dev,272887929731,1611.16,0.00,0.00,-7.80,1603.361520,1603.36,-1%
+enterpriseai-leo,enterpriseai-leo-s-8bc0,985015804108,1582.68,0.00,0.00,0.00,1582.684441,1582.68,0%
+BFF Inference Hub,bff-inference-hub,75407949928,1389.99,0.00,0.00,0.00,1389.986340,1389.99,0%
+Enterprise SEO Tools,enterprise-seo-tools,895416359498,1274.01,0.00,0.00,-2.55,1271.457973,1271.46,4%
+Security Services Production,security-services-production,99914182183,1020.60,0.00,0.00,-4.46,1016.136600,1016.14,0%
+DE Host Dev,mgm-gcp-host-dev-2ff2,104018523268,930.74,0.00,0.00,-2.23,928.505602,928.51,17%
+enterpriseai-ccai,enterpriseai-ccai-s-7458,180803351998,919.09,0.00,0.00,0.00,919.094730,919.09,0%
+Conversational Tech Dev,mgm-convotech-core-dev,338849659383,913.91,0.00,0.00,-4.67,909.247544,909.25,525%
+BFF Services Prod,bff-services-prod,600045219273,733.26,0.00,0.00,-8.12,725.139827,725.14,0%
+BFF Services QA3,bff-services-qa3,225447046441,521.38,0.00,0.00,-7.75,513.624908,513.62,0%
+BFF Services Dev,bff-services-dev,647180751119,520.14,0.00,0.00,-7.59,512.556949,512.56,0%
+platform-poc-rafay,platform-poc-rafay-d094,911401398323,544.34,0.00,0.00,-34.28,510.064531,510.06,-2%
+BFF Services Preprod,bff-services-preprod,472432908944,510.23,0.00,0.00,-7.55,502.685157,502.69,0%
+BFF Services QA2,bff-services-qa2,164182675724,509.96,0.00,0.00,-7.59,502.368079,502.37,0%
+BFF Services QA4,bff-services-qa4,143291586451,509.60,0.00,0.00,-7.57,502.033887,502.03,0%
+DE Host Payments Prod,mgm-gcp-host-pay-prod-78b6,845227945069,509.67,0.00,0.00,-8.92,500.755152,500.76,3%
+Conversational Tech Prod,mgm-convotech-core-prod,1009841319402,161.44,0.00,0.00,-4.48,156.961863,156.96,-37%
+DE Apigee Dev,mgm-gcp-apigee-dev-38ed,238307586088,140.35,0.00,0.00,0.00,140.347652,140.35,33%
+DE Sandbox,mgmri-de-sandbox-3993,441403335427,119.76,0.00,0.00,-2.81,116.941446,116.94,41%
+Gen Media Dev,gen-media-dev-9360,1008548735853,107.84,0.00,0.00,-0.33,107.507015,107.51,0%
+BFF AI Sandbox,bff-ai-sandbox,98976703604,89.45,0.00,0.00,0.00,89.450982,89.45,-4%
+Conversational Tech QA,mgm-convotech-core-qa,841238083448,75.11,0.00,0.00,-4.48,70.632695,70.63,54%
+Anthos PoC,anthospoc-386521,735782616899,43.28,0.00,0.00,-8.87,34.401220,34.40,161%
+BFF Services CICD,bff-services-cicd,902287343257,31.38,0.00,0.00,0.00,31.383105,31.38,-14%
+Conversational Tech Preprod,mgm-convotech-core-preprod,790405136716,28.68,0.00,0.00,-4.47,24.210654,24.21,-22%
+DE Apigee Payments Prod,mgm-gcp-apigee-pay-prod-220c,205479714327,8.22,0.00,0.00,0.00,8.217412,8.22,1%
+MGM Agentic Platform,mgmresorts-agentic-platform,37314578321,3.84,0.00,0.00,0.00,3.844706,3.84,-3%
+DE Shared Services Prod,de-shared-services-prod,213040699259,0.96,0.00,0.00,0.00,0.962351,0.96,3%
+Kiosk Core Prod,kiosk-core-prod,122321971951,0.84,0.00,0.00,0.00,0.837787,0.84,-5%
+Chat Services Prod,chat-services-prod,1044787944309,0.61,0.00,0.00,0.00,0.606613,0.61,-3%
+Security Services Development,security-services-development,421577810376,0.21,0.00,0.00,0.00,0.207799,0.21,-19%
+Kiosk Core Dev,kiosk-core-dev,110845169822,0.16,0.00,0.00,0.00,0.157862,0.16,-6%
+DE Shared Services Development,de-shared-services-development,1002760527927,0.02,0.00,0.00,0.00,0.018110,0.02,0%
+Chat Services Dev,chat-services-dev,142223184614,0.01,0.00,0.00,0.00,0.014279,0.01,0%
+,,,,,,Subtotal,39885.730872,39885.73
+,,,,,,Tax,0.000000,0.00
+,,,,,,Total,39885.730872,39885.73
