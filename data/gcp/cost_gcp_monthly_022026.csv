@@ -1,0 +1,47 @@
+Project name,Project ID,Project number,List cost ($),Negotiated savings ($),Savings programs ($),Other savings ($),Unrounded subtotal ($),Subtotal ($),Percent change in subtotal compared to previous period
+MCORE Prod,mgm-resorts-app,680758060118,9854.13,0.00,0.00,-16.78,9837.355933,9837.36,11%
+DE Hub,mgm-gcp-hub-2395,80706764470,5516.82,0.00,0.00,0.00,5516.817494,5516.82,2%
+DE Host Prod,mgm-gcp-host-prod-99ba,554450694446,5426.93,0.00,0.00,-12.10,5414.834848,5414.83,3%
+[Charges not specific to a project],,,2985.91,0.00,0.00,-100.00,2885.913643,2885.91,4%
+DE Apigee Prod,mgm-gcp-apigee-prod-904e,718648447782,2058.62,0.00,0.00,0.00,2058.621006,2058.62,-1%
+MCORE Dev,mgm-resorts-dev,272887929731,1437.97,0.00,0.00,-7.02,1430.958448,1430.96,-1%
+enterpriseai-leo,enterpriseai-leo-s-8bc0,985015804108,1428.92,0.00,0.00,0.00,1428.923022,1428.92,0%
+BFF Inference Hub,bff-inference-hub,75407949928,1255.47,0.00,0.00,0.00,1255.474621,1255.47,0%
+Security Services Production,security-services-production,99914182183,996.39,0.00,0.00,-4.03,992.354296,992.35,2%
+enterpriseai-ccai,enterpriseai-ccai-s-7458,180803351998,829.04,0.00,0.00,0.00,829.035756,829.04,0%
+DE Host Dev,mgm-gcp-host-dev-2ff2,104018523268,826.70,0.00,0.00,-2.02,824.682249,824.68,0%
+BFF Services Prod,bff-services-prod,600045219273,661.21,0.00,0.00,-7.49,653.722070,653.72,0%
+DE Host Payments Prod,mgm-gcp-host-pay-prod-78b6,845227945069,569.51,0.00,0.00,-8.06,561.448551,561.45,16%
+Enterprise SEO Tools,enterprise-seo-tools,895416359498,539.63,0.00,0.00,-0.42,539.209022,539.21,11%
+Conversational Tech Dev,mgm-convotech-core-dev,338849659383,498.53,0.00,0.00,-11.95,486.584247,486.58,20%
+platform-poc-rafay,platform-poc-rafay-d094,911401398323,516.12,0.00,0.00,-30.96,485.160953,485.16,5%
+BFF Services Dev,bff-services-dev,647180751119,471.90,0.00,0.00,-7.03,464.873379,464.87,0%
+BFF Services QA3,bff-services-qa3,225447046441,470.84,0.00,0.00,-6.98,463.858249,463.86,0%
+BFF Services Preprod,bff-services-preprod,472432908944,462.81,0.00,0.00,-6.82,455.993311,455.99,0%
+BFF Services QA2,bff-services-qa2,164182675724,461.42,0.00,0.00,-6.90,454.517872,454.52,0%
+BFF Services QA4,bff-services-qa4,143291586451,460.93,0.00,0.00,-6.81,454.129223,454.13,0%
+Conversational Tech QA,mgm-convotech-core-qa,841238083448,265.53,0.00,0.00,-4.04,261.495198,261.50,214%
+Conversational Tech Prod,mgm-convotech-core-prod,1009841319402,241.83,0.00,0.00,-4.04,237.790460,237.79,47%
+DE Apigee Dev,mgm-gcp-apigee-dev-38ed,238307586088,126.91,0.00,0.00,0.00,126.905258,126.91,-3%
+Gen Media Dev,gen-media-dev-9360,1008548735853,107.34,0.00,0.00,-0.31,107.028271,107.03,10%
+BFF AI Sandbox,bff-ai-sandbox,98976703604,79.87,0.00,0.00,0.00,79.865771,79.87,-3%
+AI Automation Hub Dev,mgm-ai-automation-hub-dev,527820720822,48.18,0.00,0.00,-0.37,47.810052,47.81,New
+DE Sandbox,mgmri-de-sandbox-3993,441403335427,49.15,0.00,0.00,-4.04,45.119113,45.12,-34%
+Conversational Tech Preprod,mgm-convotech-core-preprod,790405136716,44.26,0.00,0.00,-4.04,40.219562,40.22,56%
+BFF Services CICD,bff-services-cicd,902287343257,28.82,0.00,0.00,0.00,28.822900,28.82,273%
+Anthos PoC,anthospoc-386521,735782616899,35.69,0.00,0.00,-7.99,27.699819,27.70,-1%
+BFF Services Dev Host,bff-services-dev-host,633968712706,9.51,0.00,0.00,-0.02,9.495447,9.50,New
+BFF Services Prod Host,bff-services-prod-host,713085039382,9.43,0.00,0.00,0.00,9.425080,9.43,New
+DE Apigee Payments Prod,mgm-gcp-apigee-pay-prod-220c,205479714327,9.31,0.00,0.00,0.00,9.313348,9.31,-20%
+MGM Agentic Platform,mgmresorts-agentic-platform,37314578321,3.83,0.00,0.00,0.00,3.832146,3.83,10%
+DE Shared Services Prod,de-shared-services-prod,213040699259,1.09,0.00,0.00,0.00,1.094021,1.09,14%
+Kiosk Core Prod,kiosk-core-prod,122321971951,0.83,0.00,0.00,0.00,0.829388,0.83,9%
+Chat Services Prod,chat-services-prod,1044787944309,0.73,0.00,0.00,0.00,0.726947,0.73,14%
+Security Services Development,security-services-development,421577810376,0.20,0.00,0.00,0.00,0.196248,0.20,5%
+Kiosk Core Dev,kiosk-core-dev,110845169822,0.16,0.00,0.00,0.00,0.156619,0.16,14%
+DE Shared Services Development,de-shared-services-development,1002760527927,0.02,0.00,0.00,0.00,0.018098,0.02,0%
+Chat Services Dev,chat-services-dev,142223184614,0.01,0.00,0.00,0.00,0.005882,0.01,0%
+Organization Policy Sandbox,org-policy-sandbox-33d6,205218161768,0.00,0.00,0.00,0.00,0.000001,0.00,0%
+,,,,,,Subtotal,38532.317822,38532.32
+,,,,,,Tax,0.000000,0.00
+,,,,,,Total,38532.317822,38532.32
