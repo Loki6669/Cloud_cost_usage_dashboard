@@ -892,9 +892,12 @@ function renderOverviewSingle(idx){
   // ── YTD + MCA ─────────────────────────────────
   h+='<div class="g2e">';
   // YTD
-  var ytdRows=rows.map(function(r){return{n:r.n,clr:r.clr,ytd:r.costs.reduce(function(s,v){return s+v;},0)};});
+  var ytdIdxs=DATA.months.map(function(m,i){return{m:m,i:i};}).filter(function(x){return x.m.indexOf('2026')!==-1;}).map(function(x){return x.i;});
+  var ytdRows=rows.map(function(r){return{n:r.n,clr:r.clr,ytd:ytdIdxs.reduce(function(s,i){return s+(r.costs[i]||0);},0)};});
   var ytdTotal=ytdRows.reduce(function(s,r){return s+r.ytd;},0);
-  h+='<div class="card"><div class="card-hdr"><div class="card-title">Year-to-Date Spend</div><div class="card-sub">'+DATA.months[0]+' &rarr; '+DATA.months[DATA.months.length-1]+'</div></div>';
+  var ytdFirst=ytdIdxs.length?DATA.months[ytdIdxs[0]]:'2026';
+  var ytdLast=ytdIdxs.length?DATA.months[ytdIdxs[ytdIdxs.length-1]]:'2026';
+  h+='<div class="card"><div class="card-hdr"><div class="card-title">Year-to-Date Spend</div><div class="card-sub">'+ytdFirst+' &rarr; '+ytdLast+'</div></div>';
   h+='<div class="tscroll"><table><thead><tr><th>Cloud</th><th class="r">YTD Cost</th><th class="r">Share of Total</th></tr></thead><tbody>';
   ytdRows.forEach(function(r){
     h+='<tr><td class="b"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+r.clr+';margin-right:8px;vertical-align:middle"></span>'+r.n+'</td>';
